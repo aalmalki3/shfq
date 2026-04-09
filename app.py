@@ -1,10 +1,10 @@
 import streamlit as st
-import requests
+import streamlit.components.v1 as components
 
-# إعداد الصفحة
+# 1. إعداد الصفحة
 st.set_page_config(page_title="شفق | SHFQ", page_icon="🌅", layout="centered")
 
-# التنسيق المحسن (CSS)
+# 2. التنسيق المحسن (CSS) لدمج الهوية مع الاستبيان
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
@@ -35,26 +35,20 @@ st.markdown("""
         margin-top: 30px;
     }
 
-    /* إصلاح لون نص الزر وجعله مقروءاً */
-    .stButton>button {
-        width: 100%;
-        background: linear-gradient(90deg, #2C4251, #0B1622) !important;
-        color: #ffffff !important; /* نص أبيض ناصع */
-        border-radius: 12px !important;
-        border: none !important;
-        padding: 15px !important;
-        font-weight: 700 !important;
-        font-size: 1.2rem !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    .stTitle {
+        font-weight: 700;
+        color: #0B1622;
+        text-align: center;
     }
-    
-    .stButton>button p {
-        color: #ffffff !important; /* تأكيد اللون الأبيض داخل العناصر الفرعية للزر */
-    }
+
+    /* إخفاء شعار ستريملت الزائد للتركيز على المحتوى */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
-# محتوى الصفحة
+# 3. عرض الشعار في المنتصف
 col1, col2, col3 = st.columns([1, 1.5, 1])
 with col2:
     try:
@@ -62,33 +56,25 @@ with col2:
     except:
         st.markdown("<h2 style='text-align:center;'>🌅 شفق</h2>", unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align:center; color:#0B1622;'>شفق | SHFQ</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; color:#2C4251;'>نحلل سيرتك الذاتية لنرسم لك مستقبلاً مهنياً واضحاً.</p>", unsafe_allow_html=True)
+# 4. النصوص التعريفية
+st.markdown("<h1 class='stTitle'>مرحباً بك في شفق</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; color:#2C4251; font-size:1.2rem;'>نورٌ هادئ، لمستقبلٍ مهنيٍ واضح. يرجى إكمال النموذج أدناه لرفع سيرتك الذاتية وبدء التحليل الاستراتيجي.</p>", unsafe_allow_html=True)
 st.write("---")
 
-# منطقة الرفع
-uploaded_file = st.file_uploader("ارفع ملف السيرة الذاتية (PDF)", type=["pdf"])
+# 5. تضمين استبيان تالي (Tally Embed)
+# تم استخدام كود التضمين الخاص بك مع ميزة الطول الديناميكي
+tally_embed_html = """
+<iframe data-tally-src="https://tally.so/embed/lb7DVN?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
+loading="lazy" width="100%" height="1245" frameborder="0" marginheight="0" marginwidth="0" 
+title="بنك السير الذاتية | CV Bank"></iframe>
+<script>
+var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}
+</script>
+"""
 
-# جلب رابط ميك (تأكد من كتابة الاسم تماماً كما في Secrets)
-# ملاحظة: إذا كنت تضعه في Secrets، تأكد من الضغط على Save هناك.
-MAKE_URL = st.secrets.get("MAKE_WEBHOOK_URL")
+# عرض الاستبيان داخل حاوية ستريملت
+components.html(tally_embed_html, height=1300, scrolling=True)
 
-if uploaded_file is not None:
-    st.success("✅ تم استلام الملف")
-    if st.button("بدء التحليل الاستراتيجي"):
-        if not MAKE_URL:
-            st.warning("⚠️ يرجى التأكد من إضافة MAKE_WEBHOOK_URL في إعدادات Secrets في Streamlit Cloud")
-        else:
-            with st.spinner('جاري نقل البيانات إلى ميك...'):
-                try:
-                    files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
-                    res = requests.post(MAKE_URL, data={"filename": uploaded_file.name}, files=files)
-                    if res.status_code == 200:
-                        st.balloons()
-                        st.info("✨ تم بنجاح! فريق شفق سيهتم بالباقي.")
-                    else:
-                        st.error(f"حدث خطأ في الاتصال بميك: {res.status_code}")
-                except Exception as e:
-                    st.error(f"حدث خطأ تقني: {e}")
-
-st.markdown("<br><p style='text-align:center; opacity:0.5; color:#0B1622;'>شفق 2026</p>", unsafe_allow_html=True)
+# 6. التذييل
+st.write("---")
+st.markdown("<p style='text-align:center; opacity:0.5; color:#0B1622;'>جميع الحقوق محفوظة - شفق 2026</p>", unsafe_allow_html=True)
