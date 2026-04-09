@@ -58,12 +58,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. عرض الشعار (تأكد أن الملف موجود في مسار assets/logo.png)
+# 3. عرض الشعار (تأكد أن الملف موجود في مسار assets/shfq.jpg)
 # إذا كان الشعار في المجلد الرئيسي، احذف كلمة assets/
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     try:
-        st.image("assets/logo.png", use_container_width=True)
+        st.image("assets/shfq.jpg", use_container_width=True)
     except:
         st.write("⚠️ يرجى رفع ملف الشعار في مجلد assets")
 
