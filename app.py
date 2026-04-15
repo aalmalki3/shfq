@@ -36,7 +36,7 @@ def check_report_status(email, access_code):
             error_msg = data.get("message", "")
             # ترجمة الخطأ الشهير الخاص بمسميات الأعمدة
             if "Could not find property" in error_msg:
-                return "ERROR", "لم يتم العثور على أعمدة البيانات المطلوبة. تأكد من تسمية الأعمدة في نوشن بـ (Email) و (Access Code) بدقة."
+                return "ERROR", "لم يتم العثور على أعمدة البيانات المطلوبة. قم بإعادة تعبئة النموذج"
             return "ERROR", f"حدث خطأ في الاتصال: {error_msg}"
 
         results = data.get("results", [])
@@ -135,7 +135,7 @@ if st.session_state.page == "main":
     tally_embed = '<iframe data-tally-src="https://tally.so/embed/lb7DVN?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="800" frameborder="0"></iframe><script src="https://tally.so/widgets/embed.js"></script>'
     components.html(tally_embed, height=800, scrolling=True)
     
-    if st.button("🔍 استخراج تقريري الآن"):
+    if st.button("🔍 استخرج التقرير"):
         st.session_state.page = "query_page"
         st.rerun()
 
@@ -182,12 +182,12 @@ elif st.session_state.page == "waiting":
                 st.rerun()
         progress_bar.progress(p)
         time.sleep(0.3)
-    st.info("التقرير لا يزال قيد التجهيز في نوشن.")
+    st.info("التقرير لا يزال قيد التجهيز.")
     if st.button("تحديث الحالة 🔄"): st.rerun()
 
 # --- المرحلة 4: النتائج ---
 elif st.session_state.page == "result":
-    st.success("✅ تقريرك الاستراتيجي جاهز")
+    st.success("✅ التقرير الخاص بك جاهز")
     st.write("---")
     st.markdown(st.session_state.final_report)
     if st.button("استعلام جديد 🔄"):
