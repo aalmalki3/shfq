@@ -6,7 +6,7 @@ import time
 # 1. إعداد الصفحة
 st.set_page_config(page_title="شفق | SHFQ", page_icon="🌅", layout="centered")
 
-# --- 2. دالة جلب البيانات (Direct API Request) ---
+# --- 2. دالة جلب البيانات المحدثة مع ترجمة الأخطاء ---
 def check_report_status(email, access_code):
     try:
         token = st.secrets["NOTION_TOKEN"]
@@ -33,7 +33,11 @@ def check_report_status(email, access_code):
         data = response.json()
         
         if response.status_code != 200:
-            return "ERROR", data.get("message", "خطأ في الاتصال بنوشن")
+            error_msg = data.get("message", "")
+            # ترجمة الخطأ الشهير الخاص بمسميات الأعمدة
+            if "Could not find property" in error_msg:
+                return "ERROR", "لم يتم العثور على أعمدة البيانات المطلوبة. تأكد من تسمية الأعمدة في نوشن بـ (Email) و (Access Code) بدقة."
+            return "ERROR", f"حدث خطأ في الاتصال: {error_msg}"
 
         results = data.get("results", [])
         if not results:
@@ -45,7 +49,6 @@ def check_report_status(email, access_code):
             
             if n_name_list:
                 page_id = res["id"]
-                # جلب محتوى التقرير (Blocks) عبر API مباشر
                 blocks_url = f"https://api.notion.com/v1/blocks/{page_id}/children"
                 blocks_resp = requests.get(blocks_url, headers=headers)
                 blocks_data = blocks_resp.json()
@@ -64,17 +67,56 @@ def check_report_status(email, access_code):
         
         return "NOT_FOUND", None
     except Exception as e:
-        return "ERROR", str(e)
+        return "ERROR", f"عذراً، حدث خطأ غير متوقع: {str(e)}"
 
-# --- 3. التصميم (Modern UI) ---
+# --- 3. التصميم المطور (خلفية متدرجة + Modern UI) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-    html, body, [data-testid="stAppViewContainer"] { font-family: 'Cairo', sans-serif; direction: RTL; text-align: right; }
-    .stApp { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
-    .block-container { background-color: rgba(255, 255, 255, 0.95); border-radius: 24px; padding: 3rem 2rem !important; box-shadow: 0 20px 40px rgba(0,0,0,0.05); margin-top: 2rem; }
-    .stButton>button { width: 100%; border-radius: 12px; height: 3.5rem; background-color: #2c4251 !important; color: white !important; font-weight: 600; transition: all 0.3s ease; }
-    .stButton>button:hover { background-color: #0b1622 !important; transform: translateY(-2px); }
+    
+    html, body, [data-testid="stAppViewContainer"] { 
+        font-family: 'Cairo', sans-serif; 
+        direction: RTL; 
+        text-align: right; 
+    }
+
+    /* الخلفية الملونة المتدرجة والمتحركة */
+    .stApp {
+        background: linear-gradient(-45deg, #E8D9C0, #F4D3C5, #F4C7A5, #A9CAD7, #2C4251, #0B1622);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
+    }
+
+    @keyframes gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .block-container { 
+        background-color: rgba(255, 255, 255, 0.95); 
+        border-radius: 24px; 
+        padding: 3rem 2rem !important; 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2); 
+        margin-top: 2rem; 
+    }
+
+    .stButton>button { 
+        width: 100%; 
+        border-radius: 12px; 
+        height: 3.5rem; 
+        background-color: #2c4251 !important; 
+        color: white !important; 
+        font-weight: 600; 
+        transition: all 0.3s ease; 
+        border: none;
+    }
+
+    .stButton>button:hover { 
+        background-color: #0b1622 !important; 
+        transform: translateY(-2px); 
+    }
+
     #MainMenu, footer, header { visibility: hidden; }
     </style>
 """, unsafe_allow_html=True)
@@ -83,6 +125,7 @@ st.markdown("""
 if "page" not in st.session_state:
     st.session_state.page = "main"
 
+# --- المرحلة 1: الرئيسية ---
 if st.session_state.page == "main":
     col1, col2, col3 = st.columns([1, 1.2, 1])
     with col2:
@@ -96,25 +139,26 @@ if st.session_state.page == "main":
         st.session_state.page = "query_page"
         st.rerun()
 
+# --- المرحلة 2: الاستعلام ---
 elif st.session_state.page == "query_page":
     st.markdown("<h3 style='text-align:center;'>🛡️ مركز الاستعلام الآمن</h3>", unsafe_allow_html=True)
     email_in = st.text_input("البريد الإلكتروني المعتمد:")
-    code_in = st.text_input("كود الاستعلام الخاص بك:", type="password")
+    code_in = st.text_input("كود الاستعلام الخاص بك (4 أرقام):", type="password")
     
     if st.button("التحقق من البيانات ⚡"):
         if email_in and code_in:
-            with st.spinner("جاري الاتصال بقاعدة البيانات..."):
+            with st.spinner("جاري فحص قاعدة البيانات..."):
                 status, data = check_report_status(email_in, code_in)
                 if status == "NOT_FOUND":
-                    st.error("❌ لم نجد سجلات تطابق هذه البيانات.")
+                    st.error("❌ لم نجد سجلات تطابق هذه البيانات. تأكد من صحة البريد والكود.")
                 elif status == "ERROR":
-                    st.warning(f"⚠️ خطأ: {data}")
+                    st.warning(f"⚠️ {data}")
                 else:
                     st.success("✅ تم العثور على سجلّك بنجاح.")
                     st.session_state.user_email = email_in
                     st.session_state.user_code = code_in
                     st.session_state.can_analyze = True
-        else: st.warning("يرجى تعبئة جميع الحقول.")
+        else: st.warning("يرجى إكمال جميع البيانات.")
 
     if st.session_state.get("can_analyze"):
         if st.button("إصدار ومعالجة التقرير 🚀"):
@@ -125,6 +169,7 @@ elif st.session_state.page == "query_page":
         st.session_state.page = "main"
         st.rerun()
 
+# --- المرحلة 3: الانتظار ---
 elif st.session_state.page == "waiting":
     st.markdown("<h3 style='text-align:center;'>الذكاء الاصطناعي يحلل بياناتك...</h3>", unsafe_allow_html=True)
     progress_bar = st.progress(0)
@@ -137,13 +182,17 @@ elif st.session_state.page == "waiting":
                 st.rerun()
         progress_bar.progress(p)
         time.sleep(0.3)
-    st.info("التقرير لم يجهز بعد.")
+    st.info("التقرير لا يزال قيد التجهيز في نوشن.")
     if st.button("تحديث الحالة 🔄"): st.rerun()
 
+# --- المرحلة 4: النتائج ---
 elif st.session_state.page == "result":
-    st.success("✅ تقريرك جاهز الآن")
+    st.success("✅ تقريرك الاستراتيجي جاهز")
+    st.write("---")
     st.markdown(st.session_state.final_report)
     if st.button("استعلام جديد 🔄"):
         st.session_state.can_analyze = False
         st.session_state.page = "query_page"
         st.rerun()
+
+st.markdown("<p style='text-align:center; opacity:0.6; font-size:0.8rem; margin-top:2rem;'>جميع الحقوق محفوظة لـ شفق © 2026</p>", unsafe_allow_html=True)
