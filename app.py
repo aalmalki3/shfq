@@ -12,7 +12,6 @@ def get_report_from_notion(email, access_code):
         notion = Client(auth=st.secrets["NOTION_TOKEN"])
         database_id = st.secrets["NOTION_DATABASE_ID"]
         
-        # استعلام مزدوج: البريد الإلكتروني وكود الوصول
         query = notion.databases.query(
             database_id=database_id,
             filter={
@@ -22,7 +21,7 @@ def get_report_from_notion(email, access_code):
                         "email": {"equals": email}
                     },
                     {
-                        "property": "Access Code", # تأكد من تسمية العمود في نوشن بهذا الاسم ونوعه Number
+                        "property": "Access Code", 
                         "number": {"equals": int(access_code)}
                     }
                 ]
@@ -32,7 +31,6 @@ def get_report_from_notion(email, access_code):
         results = query.get("results")
         if results:
             page_id = results[0]["id"]
-            # جلب البلوكات للتأكد من أن ميك (Make) انتهى من الكتابة
             blocks = notion.blocks.children.list(block_id=page_id)
             if len(blocks.get("results")) > 0:
                 report_text = ""
@@ -97,17 +95,37 @@ with col2:
     except:
         st.markdown("<h2 style='text-align:center;'>🌅 شفق</h2>", unsafe_allow_html=True)
 
-# 4. إدارة حالات الصفحة
+# 4. إدارة حالات الصفحة (Logic)
+# التحقق من وجود "action=query" في الرابط لتوجيه المستخدم لصفحة الاستخراج مباشرة
+query_params = st.query_params
+if "action" in query_params and query_params["action"] == "query" and "page" not in st.session_state:
+    st.session_state.page = "query_page"
+
 if "page" not in st.session_state:
     st.session_state.page = "main"
 
-# --- الصفحة الرئيسية (الاستبيان + الدخول الآمن) ---
+# --- المرحلة 1: الصفحة الرئيسية (النموذج) ---
 if st.session_state.page == "main":
     st.markdown("<h1 class='stTitle'>مرحباً بك في شفق</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#2C4251; font-size:1.2rem;'>نورٌ هادئ، لمستقبلٍ مهنيٍ واضح.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#2C4251; font-size:1.2rem;'>نورٌ هادئ، لمستقبلٍ مهنيٍ واضح. يرجى إكمال النموذج أدناه لبدء التحليل.</p>", unsafe_allow_html=True)
+    st.write("---")
+    
+    tally_embed_html = """
+    <iframe data-tally-src="https://tally.so/embed/lb7DVN?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
+    loading="lazy" width="100%" height="1000" frameborder="0" marginheight="0" marginwidth="0" 
+    title="بنك السير الذاتية | CV Bank"></iframe>
+    <script src="https://tally.so/widgets/embed.js"></script>
+    """
+    components.html(tally_embed_html, height=1000, scrolling=True)
+    
+    st.markdown("<p style='text-align:center; opacity:0.7;'>لديك كود استعلام مسبق؟ <a href='?action=query' target='_self'>اضغط هنا للاستخراج</a></p>", unsafe_allow_html=True)
+
+# --- المرحلة 2: صفحة الاستعلام الآمن (التي طلبتها بشكل مستقل) ---
+elif st.session_state.page == "query_page":
+    st.markdown("<h2 class='stTitle'>🛡️ استعلام آمن عن التقرير</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>أدخل بياناتك للمتابعة واستخراج التحليل الاستراتيجي.</p>", unsafe_allow_html=True)
     
     st.write("---")
-    st.subheader("🛡️ استعلام آمن عن التقرير")
     col_a, col_b = st.columns(2)
     with col_a:
         email_input = st.text_input("البريد الإلكتروني المستخدم في النموذج:", placeholder="example@mail.com")
@@ -116,55 +134,36 @@ if st.session_state.page == "main":
 
     if st.button("التحقق من جاهزية التقرير وبدء الاستخراج 🚀"):
         if email_input and code_input:
-            if len(code_input) == 4 and code_input.isdigit():
-                st.session_state.user_email = email_input
-                st.session_state.user_code = code_input
-                st.session_state.page = "waiting"
-                st.rerun()
-            else:
-                st.error("يرجى إدخال كود مكون من 4 أرقام فقط.")
+            st.session_state.user_email = email_input
+            st.session_state.user_code = code_input
+            st.session_state.page = "waiting"
+            st.rerun()
         else:
-            st.error("يرجى إدخال البريد الإلكتروني والكود للمتابعة.")
+            st.error("يرجى إدخال البيانات المطلوبة.")
 
-    st.write("---")
-    st.markdown("<p style='text-align:center;'>إذا لم تقم بتعبئة النموذج بعد، يرجى إكماله أدناه:</p>", unsafe_allow_html=True)
-
-    tally_embed_html = """
-    <iframe data-tally-src="https://tally.so/embed/lb7DVN?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
-    loading="lazy" width="100%" height="1000" frameborder="0" marginheight="0" marginwidth="0" 
-    title="بنك السير الذاتية | CV Bank"></iframe>
-    <script src="https://tally.so/widgets/embed.js"></script>
-    """
-    components.html(tally_embed_html, height=1000, scrolling=True)
-
-# --- صفحة الانتظار والعداد الذكي ---
+# --- المرحلة 3: صفحة الانتظار والعداد ---
 elif st.session_state.page == "waiting":
     st.markdown("<h2 style='text-align:center;'>ذكاء شفق يحلل بياناتك الآن...</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center;'>يتم الآن فحص السيرة الذاتية وبناء التقرير الاستراتيجي. يرجى الانتظار.</p>", unsafe_allow_html=True)
-    
     progress_bar = st.progress(0)
     status_text = st.empty()
     
-    report = None
-    for percent_complete in range(1, 101):
-        # فحص نوشن كل 5 خطوات في العداد (لإعطاء مساحة زمنية لمعالجة ميك)
-        if percent_complete % 5 == 0:
+    for percent in range(1, 101):
+        if percent % 5 == 0:
             report = get_report_from_notion(st.session_state.user_email, st.session_state.user_code)
             if report:
                 progress_bar.progress(100)
-                status_text.text("تم العثور على التقرير! جاري العرض...")
+                status_text.text("اكتمل التحليل بنجاح!")
                 st.session_state.final_report = report
                 st.session_state.page = "result"
                 time.sleep(1)
                 st.rerun()
         
-        if percent_complete < 95:
-            progress_bar.progress(percent_complete)
-            status_text.text(f"جاري استخراج السجل ومعالجته... {percent_complete}%")
-            time.sleep(0.6) # سرعة العداد (حوالي دقيقة للوصول لـ 95%)
+        if percent < 95:
+            progress_bar.progress(percent)
+            status_text.text(f"جاري معالجة السيرة وبناء التقرير... {percent}%")
+            time.sleep(0.5)
         else:
-            status_text.text("اللمسات النهائية للتحليل... لحظات من فضلك")
-            # استمرار الفحص المكثف في النهاية
+            status_text.text("اللمسات النهائية... لحظات قليلة")
             report = get_report_from_notion(st.session_state.user_email, st.session_state.user_code)
             if report:
                 progress_bar.progress(100)
@@ -173,15 +172,13 @@ elif st.session_state.page == "waiting":
                 st.rerun()
             time.sleep(2)
 
-# --- صفحة عرض النتيجة النهائية ---
+# --- المرحلة 4: عرض النتائج ---
 elif st.session_state.page == "result":
     st.markdown(f"<h2 style='text-align:center;'>📄 التقرير الاستراتيجي لـ {st.session_state.user_email}</h2>", unsafe_allow_html=True)
     st.write("---")
     st.markdown(st.session_state.final_report)
-    
     if st.button("استعلام جديد 🔄"):
         st.session_state.page = "main"
-        if "final_report" in st.session_state: del st.session_state.final_report
         st.rerun()
 
 # 6. التذييل
