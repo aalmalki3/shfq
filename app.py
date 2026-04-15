@@ -95,12 +95,12 @@ with col2:
         st.markdown("<h2 style='text-align:center;'>🌅 شفق</h2>", unsafe_allow_html=True)
 
 # 4. إدارة حالات الصفحة
+if "page" not in st.session_state:
+    st.session_state.page = "main"
+
 query_params = st.query_params
 if "action" in query_params and query_params["action"] == "query" and "page" not in st.session_state:
     st.session_state.page = "query_page"
-
-if "page" not in st.session_state:
-    st.session_state.page = "main"
 
 # --- المرحلة 1: الصفحة الرئيسية ---
 if st.session_state.page == "main":
@@ -133,24 +133,28 @@ elif st.session_state.page == "query_page":
         else:
             st.error("يرجى إدخال البيانات المطلوبة.")
 
-# --- المرحلة 3: صفحة الانتظار والعداد (المطورة) ---
+# --- المرحلة 3: صفحة الانتظار والعداد (تم الإصلاح هنا) ---
 elif st.session_state.page == "waiting":
     st.markdown("<h2 style='text-align:center;'>ذكاء شفق يحلل بياناتك الآن...</h2>", unsafe_allow_html=True)
     progress_bar = st.progress(0)
     status_text = st.empty()
     
-    # محاكاة عداد ذكي
+    # محاكاة عداد ذكي يبحث عن البيانات
     for percent in range(1, 101):
-        # فحص الحالة فعلياً كل 5%
+        # فحص الحالة فعلياً كل 5% لضمان عدم الاستمرار في حال الخطأ
         if percent % 5 == 0:
             status, data = check_report_status(st.session_state.user_email, st.session_state.user_code)
             
             if status == "NOT_FOUND":
-                st.error("❌ عذراً، لم نجد سجلاً يطابق هذه البيانات. تأكد من البريد الإلكتروني وكود الوصول.")
+                # مسح العناصر لتقديم رسالة الخطأ بوضوح
+                progress_bar.empty()
+                status_text.empty()
+                st.error("❌ عذراً، لم نجد سجلاً يطابق هذه البيانات في قاعدة بيانات شفق.")
+                st.info("تأكد من صحة البريد الإلكتروني وكود الوصول الذي أدخلته عند تعبئة النموذج.")
                 if st.button("العودة للتصحيح ↩️"):
                     st.session_state.page = "query_page"
                     st.rerun()
-                st.stop() # إيقاف العداد فوراً
+                st.stop() # إيقاف التنفيذ فوراً
 
             elif status == "READY":
                 progress_bar.progress(100)
@@ -160,20 +164,14 @@ elif st.session_state.page == "waiting":
                 time.sleep(1)
                 st.rerun()
 
-        # استمرار التحميل البصري
+        # استمرار التحديث البصري في حال لم يجهز بعد أو لا يزال PROCESSING
         if percent < 95:
             progress_bar.progress(percent)
             status_text.text(f"جاري البحث عن السجل والمعالجة... {percent}%")
             time.sleep(0.4)
         else:
             status_text.text("اللمسات النهائية... لحظات قليلة")
-            time.sleep(2)
-            # فحص أخير قبل النهاية
-            status, data = check_report_status(st.session_state.user_email, st.session_state.user_code)
-            if status == "READY":
-                st.session_state.final_report = data
-                st.session_state.page = "result"
-                st.rerun()
+            time.sleep(1)
 
 # --- المرحلة 4: عرض النتائج ---
 elif st.session_state.page == "result":
