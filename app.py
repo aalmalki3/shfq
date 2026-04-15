@@ -3,46 +3,35 @@ import streamlit.components.v1 as components
 from notion_client import Client
 import time
 
-# 1. إعداد الصفحة
-st.set_page_config(page_title="شفق | SHFQ", page_icon="🌅", layout="centered")
+# --- المرحلة 1: الصفحة الرئيسية (الاستبيان) ---
+if st.session_state.page == "main":
+    st.markdown("<h1 class='stTitle'>مرحباً بك في شفق</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#2C4251; font-size:1.2rem;'>نورٌ هادئ، لمستقبلٍ مهنيٍ واضح. يرجى إكمال النموذج أدناه لبدء التحليل.</p>", unsafe_allow_html=True)
+    st.write("---")
 
-# دالة مطورة لفحص الحالة
-def check_report_status(email, access_code):
-    try:
-        notion = Client(auth=st.secrets["NOTION_TOKEN"])
-        database_id = st.secrets["NOTION_DATABASE_ID"]
-        
-        query = notion.databases.query(
-            database_id=database_id,
-            filter={
-                "and": [
-                    {"property": "Email", "email": {"equals": email}},
-                    {"property": "Access Code", "number": {"equals": int(access_code)}}
-                ]
-            }
-        )
-        
-        results = query.get("results")
-        
-        if not results:
-            return "NOT_FOUND", None
-            
-        page_id = results[0]["id"]
-        blocks = notion.blocks.children.list(block_id=page_id)
-        
-        if len(blocks.get("results")) == 0:
-            return "PROCESSING", None
-            
-        report_text = ""
-        for block in blocks.get("results"):
-            if block["type"] == "paragraph":
-                rich_text = block["paragraph"]["rich_text"]
-                if rich_text:
-                    report_text += rich_text[0]["plain_text"] + "\n\n"
-        
-        return "READY", report_text
-    except Exception:
-        return "ERROR", None
+    # كود تضمين تالي المحسن
+    tally_embed_html = """
+    <iframe data-tally-src="https://tally.so/embed/lb7DVN?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
+    loading="lazy" width="100%" height="1100" frameborder="0" marginheight="0" marginwidth="0" 
+    title="بنك السير الذاتية | CV Bank"></iframe>
+    <script src="https://tally.so/widgets/embed.js"></script>
+    """
+    
+    # عرض النموذج
+    components.html(tally_embed_html, height=1100, scrolling=True)
+
+    # --- إضافة زر الانتقال لصفحة البحث بشكل واضح في الأسفل ---
+    st.write("---")
+    st.markdown("<p style='text-align:center;'>هل قمت بتعبئة النموذج مسبقاً وتريد استخراج تقريرك؟</p>", unsafe_allow_html=True)
+    
+    # زر الانتقال اليدوي
+    col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
+    with col_btn2:
+        if st.button("🔍 انتقل لصفحة البحث والاستخراج", use_container_width=True):
+            st.session_state.page = "query_page"
+            st.rerun()
+
+    st.markdown("<p style='text-align:center; opacity:0.5; font-size:0.8rem;'>أو يمكنك استخدام الرابط المباشر: <a href='?action=query' target='_self'>shfq-app.streamlit.app/?action=query</a></p>", unsafe_allow_html=True)
 
 # 2. التنسيق المحسن (CSS) كما هو
 st.markdown("""
