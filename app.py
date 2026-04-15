@@ -6,8 +6,8 @@ import time
 # 1. إعداد الصفحة
 st.set_page_config(page_title="شفق | SHFQ", page_icon="🌅", layout="centered")
 
-# دالة لجلب التقرير من نوشن (البحث بالبريد + كود الاستعلام)
-def get_report_from_notion(email, access_code):
+# دالة مطورة لجلب التقرير مع فحص حالة السجل
+def check_report_status(email, access_code):
     try:
         notion = Client(auth=st.secrets["NOTION_TOKEN"])
         database_id = st.secrets["NOTION_DATABASE_ID"]
@@ -16,33 +16,37 @@ def get_report_from_notion(email, access_code):
             database_id=database_id,
             filter={
                 "and": [
-                    {
-                        "property": "Email",
-                        "email": {"equals": email}
-                    },
-                    {
-                        "property": "Access Code", 
-                        "number": {"equals": int(access_code)}
-                    }
+                    {"property": "Email", "email": {"equals": email}},
+                    {"property": "Access Code", "number": {"equals": int(access_code)}}
                 ]
             }
         )
         
         results = query.get("results")
-        if results:
-            page_id = results[0]["id"]
-            blocks = notion.blocks.children.list(block_id=page_id)
-            if len(blocks.get("results")) > 0:
-                report_text = ""
-                for block in blocks.get("results"):
-                    if block["type"] == "paragraph":
-                        rich_text = block["paragraph"]["rich_text"]
-                        if rich_text:
-                            report_text += rich_text[0]["plain_text"] + "\n\n"
-                return report_text
-    except Exception:
-        return None
-    return None
+        
+        # الحالة الأولى: السجل غير موجود نهائياً
+        if not results:
+            return "NOT_FOUND", None
+            
+        page_id = results[0]["id"]
+        blocks = notion.blocks.children.list(block_id=page_id)
+        
+        # الحالة الثانية: السجل موجود ولكن لم يتم إضافة محتوى التقرير بعد
+        if len(blocks.get("results")) == 0:
+            return "PROCESSING", None
+            
+        # الحالة الثالثة: السجل موجود والتقرير جاهز
+        report_text = ""
+        for block in blocks.get("results"):
+            if block["type"] == "paragraph":
+                rich_text = block["paragraph"]["rich_text"]
+                if rich_text:
+                    report_text += rich_text[0]["plain_text"] + "\n\n"
+        
+        return "READY", report_text
+        
+    except Exception as e:
+        return "ERROR", str(e)
 
 # 2. التنسيق المحسن (CSS)
 st.markdown("""
@@ -54,19 +58,16 @@ st.markdown("""
         direction: RTL;
         text-align: right;
     }
-
     .stApp {
         background: linear-gradient(-45deg, #E8D9C0, #F4D3C5, #F4C7A5, #A9CAD7, #2C4251, #0B1622);
         background-size: 400% 400%;
         animation: gradient 15s ease infinite;
     }
-
     @keyframes gradient {
         0% { background-position: 0% 50%; }
         50% { background-position: 100% 50%; }
         100% { background-position: 0% 50%; }
     }
-
     .block-container {
         background-color: rgba(255, 255, 255, 0.95);
         border-radius: 20px;
@@ -74,13 +75,11 @@ st.markdown("""
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         margin-top: 30px;
     }
-
     .stTitle {
         font-weight: 700;
         color: #0B1622;
         text-align: center;
     }
-
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -95,8 +94,7 @@ with col2:
     except:
         st.markdown("<h2 style='text-align:center;'>🌅 شفق</h2>", unsafe_allow_html=True)
 
-# 4. إدارة حالات الصفحة (Logic)
-# التحقق من وجود "action=query" في الرابط لتوجيه المستخدم لصفحة الاستخراج مباشرة
+# 4. إدارة حالات الصفحة
 query_params = st.query_params
 if "action" in query_params and query_params["action"] == "query" and "page" not in st.session_state:
     st.session_state.page = "query_page"
@@ -104,35 +102,29 @@ if "action" in query_params and query_params["action"] == "query" and "page" not
 if "page" not in st.session_state:
     st.session_state.page = "main"
 
-# --- المرحلة 1: الصفحة الرئيسية (النموذج) ---
+# --- المرحلة 1: الصفحة الرئيسية ---
 if st.session_state.page == "main":
     st.markdown("<h1 class='stTitle'>مرحباً بك في شفق</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; color:#2C4251; font-size:1.2rem;'>نورٌ هادئ، لمستقبلٍ مهنيٍ واضح. يرجى إكمال النموذج أدناه لبدء التحليل.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#2C4251; font-size:1.2rem;'>نورٌ هادئ، لمستقبلٍ مهنيٍ واضح.</p>", unsafe_allow_html=True)
     st.write("---")
-    
     tally_embed_html = """
     <iframe data-tally-src="https://tally.so/embed/lb7DVN?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" 
-    loading="lazy" width="100%" height="1000" frameborder="0" marginheight="0" marginwidth="0" 
-    title="بنك السير الذاتية | CV Bank"></iframe>
+    loading="lazy" width="100%" height="1000" frameborder="0" title="بنك السير الذاتية"></iframe>
     <script src="https://tally.so/widgets/embed.js"></script>
     """
     components.html(tally_embed_html, height=1000, scrolling=True)
-    
     st.markdown("<p style='text-align:center; opacity:0.7;'>لديك كود استعلام مسبق؟ <a href='?action=query' target='_self'>اضغط هنا للاستخراج</a></p>", unsafe_allow_html=True)
 
-# --- المرحلة 2: صفحة الاستعلام الآمن (التي طلبتها بشكل مستقل) ---
+# --- المرحلة 2: صفحة الاستعلام الآمن ---
 elif st.session_state.page == "query_page":
     st.markdown("<h2 class='stTitle'>🛡️ استعلام آمن عن التقرير</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center;'>أدخل بياناتك للمتابعة واستخراج التحليل الاستراتيجي.</p>", unsafe_allow_html=True)
-    
-    st.write("---")
     col_a, col_b = st.columns(2)
     with col_a:
-        email_input = st.text_input("البريد الإلكتروني المستخدم في النموذج:", placeholder="example@mail.com")
+        email_input = st.text_input("البريد الإلكتروني المستخدم:")
     with col_b:
-        code_input = st.text_input("كود الاستعلام (4 أرقام):", placeholder="1234", type="password")
+        code_input = st.text_input("كود الاستعلام (4 أرقام):", type="password")
 
-    if st.button("التحقق من جاهزية التقرير وبدء الاستخراج 🚀"):
+    if st.button("التحقق وبدء الاستخراج 🚀"):
         if email_input and code_input:
             st.session_state.user_email = email_input
             st.session_state.user_code = code_input
@@ -141,40 +133,51 @@ elif st.session_state.page == "query_page":
         else:
             st.error("يرجى إدخال البيانات المطلوبة.")
 
-# --- المرحلة 3: صفحة الانتظار والعداد ---
+# --- المرحلة 3: صفحة الانتظار والعداد (المطورة) ---
 elif st.session_state.page == "waiting":
     st.markdown("<h2 style='text-align:center;'>ذكاء شفق يحلل بياناتك الآن...</h2>", unsafe_allow_html=True)
     progress_bar = st.progress(0)
     status_text = st.empty()
     
+    # محاكاة عداد ذكي
     for percent in range(1, 101):
+        # فحص الحالة فعلياً كل 5%
         if percent % 5 == 0:
-            report = get_report_from_notion(st.session_state.user_email, st.session_state.user_code)
-            if report:
+            status, data = check_report_status(st.session_state.user_email, st.session_state.user_code)
+            
+            if status == "NOT_FOUND":
+                st.error("❌ عذراً، لم نجد سجلاً يطابق هذه البيانات. تأكد من البريد الإلكتروني وكود الوصول.")
+                if st.button("العودة للتصحيح ↩️"):
+                    st.session_state.page = "query_page"
+                    st.rerun()
+                st.stop() # إيقاف العداد فوراً
+
+            elif status == "READY":
                 progress_bar.progress(100)
                 status_text.text("اكتمل التحليل بنجاح!")
-                st.session_state.final_report = report
+                st.session_state.final_report = data
                 st.session_state.page = "result"
                 time.sleep(1)
                 st.rerun()
-        
+
+        # استمرار التحميل البصري
         if percent < 95:
             progress_bar.progress(percent)
-            status_text.text(f"جاري معالجة السيرة وبناء التقرير... {percent}%")
-            time.sleep(0.5)
+            status_text.text(f"جاري البحث عن السجل والمعالجة... {percent}%")
+            time.sleep(0.4)
         else:
             status_text.text("اللمسات النهائية... لحظات قليلة")
-            report = get_report_from_notion(st.session_state.user_email, st.session_state.user_code)
-            if report:
-                progress_bar.progress(100)
-                st.session_state.final_report = report
+            time.sleep(2)
+            # فحص أخير قبل النهاية
+            status, data = check_report_status(st.session_state.user_email, st.session_state.user_code)
+            if status == "READY":
+                st.session_state.final_report = data
                 st.session_state.page = "result"
                 st.rerun()
-            time.sleep(2)
 
 # --- المرحلة 4: عرض النتائج ---
 elif st.session_state.page == "result":
-    st.markdown(f"<h2 style='text-align:center;'>📄 التقرير الاستراتيجي لـ {st.session_state.user_email}</h2>", unsafe_allow_html=True)
+    st.markdown(f"<h3 style='text-align:center;'>📄 التقرير الاستراتيجي لـ {st.session_state.user_email}</h3>", unsafe_allow_html=True)
     st.write("---")
     st.markdown(st.session_state.final_report)
     if st.button("استعلام جديد 🔄"):
