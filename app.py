@@ -6,7 +6,7 @@ import time
 # 1. إعداد الصفحة
 st.set_page_config(page_title="شفق | SHFQ", page_icon="🌅", layout="centered")
 
-# --- 2. دالة جلب البيانات المحدثة مع ترجمة الأخطاء ---
+# --- 2. دالة جلب البيانات المحدثة (قراءة التقرير بالكامل) ---
 def check_report_status(email, access_code):
     try:
         token = st.secrets["NOTION_TOKEN"]
@@ -20,7 +20,6 @@ def check_report_status(email, access_code):
             "Notion-Version": "2022-06-28"
         }
         
-        # تصحيح الإزاحة هنا لضمان بقائها داخل بلوك الـ try
         payload = {
             "filter": {
                 "and": [
@@ -34,10 +33,7 @@ def check_report_status(email, access_code):
         data = response.json()
         
         if response.status_code != 200:
-            error_msg = data.get("message", "")
-            # ترجمة الخطأ الشهير الخاص بمسميات الأعمدة
-            if "Could not find property" in error_msg:
-                return "ERROR", "لم يتم العثور على أعمدة البيانات المطلوبة (تأكد من وجود Email و Access Code كـ Text)"
+            error_msg = data.get("message", "خطأ غير معروف")
             return "ERROR", f"حدث خطأ في الاتصال: {error_msg}"
 
         results = data.get("results", [])
@@ -50,16 +46,26 @@ def check_report_status(email, access_code):
             
             if n_name_list:
                 page_id = res["id"]
-                blocks_url = f"https://api.notion.com/v1/blocks/{page_id}/children"
+                # --- تطوير: جلب جميع الـ Blocks داخل الصفحة (التقرير الكامل) ---
+                blocks_url = f"https://api.notion.com/v1/blocks/{page_id}/children?page_size=100"
                 blocks_resp = requests.get(blocks_url, headers=headers)
                 blocks_data = blocks_resp.json()
                 
-                report_text = ""
+                all_text_parts = []
                 for block in blocks_data.get("results", []):
-                    if block["type"] == "paragraph":
-                        rich = block["paragraph"]["rich_text"]
-                        if rich:
-                            report_text += rich[0]["plain_text"] + "\n\n"
+                    block_type = block["type"]
+                    # دعم كافة أنواع النصوص لضمان عدم ضياع أي معلومة
+                    supported_types = ["paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item"]
+                    
+                    if block_type in supported_types:
+                        rich_text = block[block_type].get("rich_text", [])
+                        if rich_text:
+                            # دمج النصوص داخل البلوك الواحد (Bold, Italic, etc)
+                            block_text = "".join([t["plain_text"] for t in rich_text])
+                            all_text_parts.append(block_text)
+                
+                # دمج كافة الفقرات بفاصل أسطر لتكوين التقرير النهائي
+                report_text = "\n\n".join(all_text_parts)
                 
                 if report_text.strip():
                     return "READY", report_text
@@ -70,7 +76,7 @@ def check_report_status(email, access_code):
     except Exception as e:
         return "ERROR", f"عذراً، حدث خطأ غير متوقع: {str(e)}"
 
-# --- 3. التصميم المطور (خلفية متدرجة + Modern UI) ---
+# --- 3. التصميم المطور (CSS) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
@@ -148,7 +154,7 @@ elif st.session_state.page == "query_page":
             with st.spinner("جاري فحص قاعدة البيانات..."):
                 status, data = check_report_status(email_in, code_in)
                 if status == "NOT_FOUND":
-                    st.error("❌ لم نجد سجلات تطابق هذه البيانات. تأكد من صحة البريد والكود.")
+                    st.error("❌ لم نجد سجلات تطابق هذه البيانات.")
                 elif status == "ERROR":
                     st.warning(f"⚠️ {data}")
                 else:
@@ -178,12 +184,13 @@ elif st.session_state.page == "waiting":
                 st.session_state.page = "result"
                 st.rerun()
         progress_bar.progress(p)
-        time.sleep(0.3)
-    st.info("التقرير لا يزال قيد التجهيز.")
+        time.sleep(0.5) # وقت كافٍ للسماح لنوشن بالتزامن
+    
+    st.info("التقرير لا يزال قيد التجهيز أو أن المحتوى لم يكتمل بعد.")
     if st.button("تحديث الحالة 🔄"): st.rerun()
 
 elif st.session_state.page == "result":
-    st.success("✅ التقرير الخاص بك جاهز")
+    st.success("✅ التقرير الاستراتيجي لـ شفق")
     st.write("---")
     st.markdown(st.session_state.final_report)
     if st.button("استعلام جديد 🔄"):
