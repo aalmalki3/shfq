@@ -6,18 +6,18 @@ import time
 # 1. إعداد الصفحة
 st.set_page_config(page_title="شفق | SHFQ", page_icon="🌅", layout="centered")
 
-# --- 2. دالة جلب البيانات مع فلترة الأسطر الوهمية ---
+# --- 2. دالة جلب البيانات (تطابق يدوي صارم) ---
 def check_report_status(email, access_code):
     try:
         notion = Client(auth=st.secrets["NOTION_TOKEN"])
         database_id = st.secrets["NOTION_DATABASE_ID"]
         
-        # استعلام يبحث عن تطابق الإيميل والكود
+        # استعلام Notion
         query = notion.databases.query(
             database_id=database_id,
             filter={
                 "and": [
-                    {"property": "Email", "email": {"equals": email.strip()}},
+                    {"property": "Email", "email": {"equals": email.strip().lower()}},
                     {"property": "Access Code", "number": {"equals": int(access_code)}}
                 ]
             }
@@ -25,29 +25,32 @@ def check_report_status(email, access_code):
         
         results = query.get("results")
         
-        # --- الفلترة الصارمة للأسطر الفارغة ---
-        valid_results = []
+        # --- التحقق اليدوي الصارم (Double Verification) ---
+        found_page = None
         for res in results:
-            properties = res.get("properties", {})
+            props = res.get("properties", {})
             
-            # نتحقق من وجود "اسم" في حقل Full Name (أو الحقل الأساسي عندك)
-            # إذا كان السطر فارغاً، نوشن غالباً يترك حقل العنوان (Title) فارغاً
-            name_property = properties.get("Full Name", {}).get("title", [])
-            has_name = len(name_property) > 0
+            # جلب القيمة الفعلية للإيميل من نوشن
+            notion_email = props.get("Email", {}).get("email", "")
+            # جلب القيمة الفعلية للكود من نوشن
+            notion_code = props.get("Access Code", {}).get("number", 0)
+            # جلب الاسم للتأكد أن السطر ليس فارغاً تماماً
+            notion_name = props.get("Full Name", {}).get("title", [])
             
-            # نتحقق أيضاً أن حقل الإيميل ليس مجرد تنسيق فارغ
-            email_val = properties.get("Email", {}).get("email")
-            
-            if has_name and email_val:
-                valid_results.append(res)
+            # شرط التطابق الثلاثي: الإيميل صحيح + الكود صحيح + السطر يحتوي على اسم (ليس فارغاً)
+            if (notion_email.strip().lower() == email.strip().lower()) and \
+               (int(notion_code) == int(access_code)) and \
+               (len(notion_name) > 0):
+                found_page = res
+                break # وجدنا السجل الصحيح، توقف عن البحث
 
-        if not valid_results:
+        if not found_page:
             return "NOT_FOUND", None
             
-        page_id = valid_results[0]["id"]
+        # فحص محتوى الصفحة (Blocks)
+        page_id = found_page["id"]
         blocks = notion.blocks.children.list(block_id=page_id)
         
-        # فحص محتوى الصفحة (هل كتب التقرير فعلاً؟)
         report_text = ""
         for block in blocks.get("results"):
             if block["type"] == "paragraph":
@@ -104,16 +107,16 @@ elif st.session_state.page == "query_page":
     
     if st.button("التحقق من وجود السجل ✅", use_container_width=True):
         if email_in and code_in:
-            with st.spinner("جاري التحقق..."):
+            with st.spinner("جاري مطابقة البيانات..."):
                 status, data = check_report_status(email_in, code_in)
                 if status == "NOT_FOUND":
                     st.session_state.can_start_analysis = False
-                    st.error("❌ نعتذر، لم نجد أي بيانات حقيقية مطابقة لهذا البريد.")
+                    st.error("❌ لم نجد أي سجل مطابق للبريد والكود المدخلين.")
                 else:
                     st.session_state.user_email = email_in
                     st.session_state.user_code = code_in
                     st.session_state.can_start_analysis = True
-                    st.success("✔️ تم العثور على سجلّك بنجاح.")
+                    st.success("✔️ تم العثور على بياناتك ومطابقتها بنجاح.")
         else:
             st.warning("يرجى إدخال البيانات.")
 
@@ -134,11 +137,11 @@ elif st.session_state.page == "waiting":
                 st.rerun()
         progress_bar.progress(p)
         time.sleep(0.4)
-    st.warning("⚠️ لا يزال العمل جارياً على التقرير. يرجى التحديث بعد قليل.")
+    st.warning("⏳ التقرير قيد التجهيز، اضغط تحديث بعد لحظات.")
     if st.button("تحديث 🔄"): st.rerun()
 
 elif st.session_state.page == "result":
-    st.success("✅ تم استخراج التقرير!")
+    st.success("✅ تم الاستخراج!")
     st.markdown(st.session_state.final_report)
     if st.button("بحث جديد 🔄"):
         st.session_state.can_start_analysis = False
