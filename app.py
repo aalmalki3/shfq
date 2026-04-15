@@ -20,7 +20,8 @@ def check_report_status(email, access_code):
             "Notion-Version": "2022-06-28"
         }
         
-    payload = {
+        # تصحيح الإزاحة هنا لضمان بقائها داخل بلوك الـ try
+        payload = {
             "filter": {
                 "and": [
                     {"property": "Email", "email": {"equals": email.strip().lower()}},
@@ -36,7 +37,7 @@ def check_report_status(email, access_code):
             error_msg = data.get("message", "")
             # ترجمة الخطأ الشهير الخاص بمسميات الأعمدة
             if "Could not find property" in error_msg:
-                return "ERROR", "لم يتم العثور على أعمدة البيانات المطلوبة. قم بإعادة تعبئة النموذج"
+                return "ERROR", "لم يتم العثور على أعمدة البيانات المطلوبة (تأكد من وجود Email و Access Code كـ Text)"
             return "ERROR", f"حدث خطأ في الاتصال: {error_msg}"
 
         results = data.get("results", [])
@@ -80,7 +81,6 @@ st.markdown("""
         text-align: right; 
     }
 
-    /* الخلفية الملونة المتدرجة والمتحركة */
     .stApp {
         background: linear-gradient(-45deg, #E8D9C0, #F4D3C5, #F4C7A5, #A9CAD7, #2C4251, #0B1622);
         background-size: 400% 400%;
@@ -125,7 +125,6 @@ st.markdown("""
 if "page" not in st.session_state:
     st.session_state.page = "main"
 
-# --- المرحلة 1: الرئيسية ---
 if st.session_state.page == "main":
     col1, col2, col3 = st.columns([1, 1.2, 1])
     with col2:
@@ -135,11 +134,10 @@ if st.session_state.page == "main":
     tally_embed = '<iframe data-tally-src="https://tally.so/embed/lb7DVN?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="800" frameborder="0"></iframe><script src="https://tally.so/widgets/embed.js"></script>'
     components.html(tally_embed, height=800, scrolling=True)
     
-    if st.button("🔍 استخرج التقرير"):
+    if st.button("🔍 استخراج التقرير"):
         st.session_state.page = "query_page"
         st.rerun()
 
-# --- المرحلة 2: الاستعلام ---
 elif st.session_state.page == "query_page":
     st.markdown("<h3 style='text-align:center;'>🛡️ مركز الاستعلام الآمن</h3>", unsafe_allow_html=True)
     email_in = st.text_input("البريد الإلكتروني المعتمد:")
@@ -169,7 +167,6 @@ elif st.session_state.page == "query_page":
         st.session_state.page = "main"
         st.rerun()
 
-# --- المرحلة 3: الانتظار ---
 elif st.session_state.page == "waiting":
     st.markdown("<h3 style='text-align:center;'>الذكاء الاصطناعي يحلل بياناتك...</h3>", unsafe_allow_html=True)
     progress_bar = st.progress(0)
@@ -185,7 +182,6 @@ elif st.session_state.page == "waiting":
     st.info("التقرير لا يزال قيد التجهيز.")
     if st.button("تحديث الحالة 🔄"): st.rerun()
 
-# --- المرحلة 4: النتائج ---
 elif st.session_state.page == "result":
     st.success("✅ التقرير الخاص بك جاهز")
     st.write("---")
