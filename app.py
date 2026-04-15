@@ -24,18 +24,15 @@ def check_report_status(email, access_code):
         
         results = query.get("results")
         
-        # الحالة الأولى: السجل غير موجود نهائياً
         if not results:
             return "NOT_FOUND", None
             
         page_id = results[0]["id"]
         blocks = notion.blocks.children.list(block_id=page_id)
         
-        # الحالة الثانية: السجل موجود ولكن لم يتم إضافة محتوى التقرير بعد
         if len(blocks.get("results")) == 0:
             return "PROCESSING", None
             
-        # الحالة الثالثة: السجل موجود والتقرير جاهز
         report_text = ""
         for block in blocks.get("results"):
             if block["type"] == "paragraph":
@@ -94,15 +91,16 @@ with col2:
     except:
         st.markdown("<h2 style='text-align:center;'>🌅 شفق</h2>", unsafe_allow_html=True)
 
-# 4. إدارة حالات الصفحة
+# 4. إدارة حالات الصفحة (تم التعديل لضمان عدم العودة التلقائية)
 if "page" not in st.session_state:
-    st.session_state.page = "main"
+    # الفحص الأولي للرابط عند أول دخول فقط
+    params = st.query_params
+    if params.get("action") == "query":
+        st.session_state.page = "query_page"
+    else:
+        st.session_state.page = "main"
 
-query_params = st.query_params
-if "action" in query_params and query_params["action"] == "query" and "page" not in st.session_state:
-    st.session_state.page = "query_page"
-
-# --- المرحلة 1: الصفحة الرئيسية ---
+# --- المرحلة 1: الصفحة الرئيسية (الاستبيان) ---
 if st.session_state.page == "main":
     st.markdown("<h1 class='stTitle'>مرحباً بك في شفق</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; color:#2C4251; font-size:1.2rem;'>نورٌ هادئ، لمستقبلٍ مهنيٍ واضح.</p>", unsafe_allow_html=True)
@@ -126,6 +124,7 @@ elif st.session_state.page == "query_page":
 
     if st.button("التحقق وبدء الاستخراج 🚀"):
         if email_input and code_input:
+            # تحديث الحالة للانتقال لصفحة العداد
             st.session_state.user_email = email_input
             st.session_state.user_code = code_input
             st.session_state.page = "waiting"
@@ -133,20 +132,17 @@ elif st.session_state.page == "query_page":
         else:
             st.error("يرجى إدخال البيانات المطلوبة.")
 
-# --- المرحلة 3: صفحة الانتظار والعداد (تم الإصلاح هنا) ---
+# --- المرحلة 3: صفحة الانتظار والعداد (مع فحص التوفر الفوري) ---
 elif st.session_state.page == "waiting":
     st.markdown("<h2 style='text-align:center;'>ذكاء شفق يحلل بياناتك الآن...</h2>", unsafe_allow_html=True)
     progress_bar = st.progress(0)
     status_text = st.empty()
     
-    # محاكاة عداد ذكي يبحث عن البيانات
     for percent in range(1, 101):
-        # فحص الحالة فعلياً كل 5% لضمان عدم الاستمرار في حال الخطأ
         if percent % 5 == 0:
             status, data = check_report_status(st.session_state.user_email, st.session_state.user_code)
             
             if status == "NOT_FOUND":
-                # مسح العناصر لتقديم رسالة الخطأ بوضوح
                 progress_bar.empty()
                 status_text.empty()
                 st.error("❌ عذراً، لم نجد سجلاً يطابق هذه البيانات في قاعدة بيانات شفق.")
@@ -154,7 +150,7 @@ elif st.session_state.page == "waiting":
                 if st.button("العودة للتصحيح ↩️"):
                     st.session_state.page = "query_page"
                     st.rerun()
-                st.stop() # إيقاف التنفيذ فوراً
+                st.stop()
 
             elif status == "READY":
                 progress_bar.progress(100)
@@ -164,7 +160,6 @@ elif st.session_state.page == "waiting":
                 time.sleep(1)
                 st.rerun()
 
-        # استمرار التحديث البصري في حال لم يجهز بعد أو لا يزال PROCESSING
         if percent < 95:
             progress_bar.progress(percent)
             status_text.text(f"جاري البحث عن السجل والمعالجة... {percent}%")
@@ -179,6 +174,9 @@ elif st.session_state.page == "result":
     st.write("---")
     st.markdown(st.session_state.final_report)
     if st.button("استعلام جديد 🔄"):
+        # تنظيف البيانات والعودة للبداية
+        for key in ["user_email", "user_code", "final_report"]:
+            if key in st.session_state: del st.session_state[key]
         st.session_state.page = "main"
         st.rerun()
 
