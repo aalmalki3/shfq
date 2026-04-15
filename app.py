@@ -18,7 +18,6 @@ def check_report_status(email, access_code):
             "Notion-Version": "2022-06-28"
         }
         
-        # تحسين: طلب نتيجة واحدة فقط لتسريع عملية البحث في قاعدة البيانات
         payload = {
             "filter": {
                 "and": [
@@ -42,15 +41,14 @@ def check_report_status(email, access_code):
         res = results[0]
         page_id = res["id"]
         
-        # جلب محتوى التقرير (Blocks) - قراءة شاملة لكافة أجزاء التقرير
-        blocks_url = f"https://api.notion.com/v1/blocks/{page_id}/children?page_size=50"
+        blocks_url = f"https://api.notion.com/v1/blocks/{page_id}/children?page_size=100"
         blocks_resp = requests.get(blocks_url, headers=headers)
         blocks_data = blocks_resp.json()
         
         all_text_parts = []
         for block in blocks_data.get("results", []):
             block_type = block["type"]
-            supported = ["paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item"]
+            supported = ["paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item"]
             
             if block_type in supported:
                 rich_text = block[block_type].get("rich_text", [])
@@ -60,7 +58,6 @@ def check_report_status(email, access_code):
         
         report_text = "\n\n".join(all_text_parts)
         
-        # إذا وجدنا السجل ولكن التقرير لم يكتب بعد (جاري معالجته في Make)
         if not report_text.strip():
             return "PROCESSING", None
             
@@ -130,20 +127,39 @@ elif st.session_state.page == "query_page":
         st.rerun()
 
 elif st.session_state.page == "waiting":
-    st.markdown("<h3 style='text-align:center;'>الذكاء الاصطناعي يحلل بياناتك...</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center;'>الذكاء الاصطناعي يحلل بياناتك الآن...</h3>", unsafe_allow_html=True)
+    
+    # رسائل إشغال العميل لرفع القيمة المتصورة للخدمة
+    loading_messages = [
+        "جاري فحص ملف السيرة الذاتية بدقة...",
+        "جاري مطابقة الخبرات مع معايير الـ ATS العالمية...",
+        "الذكاء الاصطناعي يصيغ التوصيات الاستراتيجية بالعربية...",
+        "جاري تنسيق التقرير النهائي ورفعه للنظام...",
+        "لحظات ويصبح تقريرك المهني جاهزاً للعرض..."
+    ]
+    
     progress_bar = st.progress(0)
-    for p in range(1, 101):
-        if p % 25 == 0:
+    status_placeholder = st.empty()
+
+    # حلقة انتظار أطول قليلاً (حوالي 25 ثانية إجمالاً) لضمان مزامنة نوشن تماماً
+    for i in range(100):
+        # تحديث الرسالة كل 20% من التقدم
+        msg_idx = min(i // 20, len(loading_messages) - 1)
+        status_placeholder.markdown(f"<p style='text-align:center; color:#2c4251;'>{loading_messages[msg_idx]}</p>", unsafe_allow_html=True)
+        
+        # محاولات فحص عند نقاط استراتيجية
+        if i in [30, 60, 90, 99]:
             status, data = check_report_status(st.session_state.user_email, st.session_state.user_code)
             if status == "READY":
                 st.session_state.final_report = data
                 st.session_state.page = "result"
                 st.rerun()
-        progress_bar.progress(p)
-        time.sleep(0.4) 
+        
+        progress_bar.progress(i + 1)
+        time.sleep(0.25) # زيادة طفيفة لزيادة الصبر الممنوح لنوشن
     
-    st.info("التقرير قيد الكتابة الآن.. فضلاً انتظر ثوانٍ وتأكد من تحديث الحالة.")
-    if st.button("تحديث الحالة 🔄"): st.rerun()
+    st.info("التقرير يستغرق وقتاً أطول قليلاً من المعتاد لضمان الدقة.")
+    if st.button("تحديث الحالة يدوياً 🔄"): st.rerun()
 
 elif st.session_state.page == "result":
     st.success("✅ تم استخراج التقرير الاستراتيجي")
