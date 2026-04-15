@@ -6,7 +6,7 @@ import time
 # 1. إعداد الصفحة
 st.set_page_config(page_title="شفق | SHFQ", page_icon="🌅", layout="centered")
 
-# دالة مطورة لجلب التقرير مع فحص حالة السجل
+# دالة مطورة لفحص الحالة (جاهز، قيد المعالجة، غير موجود)
 def check_report_status(email, access_code):
     try:
         notion = Client(auth=st.secrets["NOTION_TOKEN"])
@@ -41,15 +41,13 @@ def check_report_status(email, access_code):
                     report_text += rich_text[0]["plain_text"] + "\n\n"
         
         return "READY", report_text
-        
-    except Exception as e:
-        return "ERROR", str(e)
+    except Exception:
+        return "ERROR", None
 
 # 2. التنسيق المحسن (CSS)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-    
     html, body, [data-testid="stAppViewContainer"] {
         font-family: 'Cairo', sans-serif;
         direction: RTL;
@@ -77,9 +75,7 @@ st.markdown("""
         color: #0B1622;
         text-align: center;
     }
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    #MainMenu, footer, header { visibility: hidden; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -91,9 +87,8 @@ with col2:
     except:
         st.markdown("<h2 style='text-align:center;'>🌅 شفق</h2>", unsafe_allow_html=True)
 
-# 4. إدارة حالات الصفحة (تم التعديل لضمان عدم العودة التلقائية)
+# 4. إدارة حالات الصفحة
 if "page" not in st.session_state:
-    # الفحص الأولي للرابط عند أول دخول فقط
     params = st.query_params
     if params.get("action") == "query":
         st.session_state.page = "query_page"
@@ -124,7 +119,6 @@ elif st.session_state.page == "query_page":
 
     if st.button("التحقق وبدء الاستخراج 🚀"):
         if email_input and code_input:
-            # تحديث الحالة للانتقال لصفحة العداد
             st.session_state.user_email = email_input
             st.session_state.user_code = code_input
             st.session_state.page = "waiting"
@@ -132,40 +126,49 @@ elif st.session_state.page == "query_page":
         else:
             st.error("يرجى إدخال البيانات المطلوبة.")
 
-# --- المرحلة 3: صفحة الانتظار والعداد (مع فحص التوفر الفوري) ---
+# --- المرحلة 3: صفحة الانتظار (النسخة الحاسمة للقطع الفوري) ---
 elif st.session_state.page == "waiting":
-    st.markdown("<h2 style='text-align:center;'>ذكاء شفق يحلل بياناتك الآن...</h2>", unsafe_allow_html=True)
-    progress_bar = st.progress(0)
-    status_text = st.empty()
+    # حاويات فارغة لتسهيل مسح العناصر من الشاشة عند الخطأ
+    header_placeholder = st.empty()
+    progress_placeholder = st.empty()
+    status_placeholder = st.empty()
+    
+    header_placeholder.markdown("<h2 style='text-align:center;'>ذكاء شفق يحلل بياناتك الآن...</h2>", unsafe_allow_html=True)
     
     for percent in range(1, 101):
-        if percent % 5 == 0:
+        # فحص الحالة مبكراً (عند 10%) وكل 10 خطوات
+        if percent % 10 == 0:
             status, data = check_report_status(st.session_state.user_email, st.session_state.user_code)
             
             if status == "NOT_FOUND":
-                progress_bar.empty()
-                status_text.empty()
-                st.error("❌ عذراً، لم نجد سجلاً يطابق هذه البيانات في قاعدة بيانات شفق.")
-                st.info("تأكد من صحة البريد الإلكتروني وكود الوصول الذي أدخلته عند تعبئة النموذج.")
+                # مسح العداد والعناوين فوراً
+                header_placeholder.empty()
+                progress_placeholder.empty()
+                status_placeholder.empty()
+                
+                # إظهار رسالة الخطأ والقطع
+                st.error(f"❌ لم نجد أي سجل للبريد: {st.session_state.user_email}")
+                st.info("تأكد من كتابة البريد بشكل صحيح وكود الوصول (4 أرقام) الذي استخدمته في النموذج.")
                 if st.button("العودة للتصحيح ↩️"):
                     st.session_state.page = "query_page"
                     st.rerun()
-                st.stop()
+                st.stop() # إيقاف المحرك نهائياً لضمان عدم استمرار العداد
 
             elif status == "READY":
-                progress_bar.progress(100)
-                status_text.text("اكتمل التحليل بنجاح!")
+                header_placeholder.empty()
+                progress_placeholder.empty()
+                status_placeholder.empty()
                 st.session_state.final_report = data
                 st.session_state.page = "result"
-                time.sleep(1)
                 st.rerun()
 
+        # تحديث العداد بصرياً فقط إذا استمرت العملية
+        progress_placeholder.progress(percent)
         if percent < 95:
-            progress_bar.progress(percent)
-            status_text.text(f"جاري البحث عن السجل والمعالجة... {percent}%")
+            status_placeholder.text(f"جاري استرجاع السجل وتحليله... {percent}%")
             time.sleep(0.4)
         else:
-            status_text.text("اللمسات النهائية... لحظات قليلة")
+            status_placeholder.text("اللمسات النهائية... لحظات قليلة")
             time.sleep(1)
 
 # --- المرحلة 4: عرض النتائج ---
@@ -174,7 +177,6 @@ elif st.session_state.page == "result":
     st.write("---")
     st.markdown(st.session_state.final_report)
     if st.button("استعلام جديد 🔄"):
-        # تنظيف البيانات والعودة للبداية
         for key in ["user_email", "user_code", "final_report"]:
             if key in st.session_state: del st.session_state[key]
         st.session_state.page = "main"
