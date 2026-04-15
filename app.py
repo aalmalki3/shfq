@@ -20,7 +20,7 @@ def check_report_status(email, access_code):
             "Notion-Version": "2022-06-28"
         }
         
-payload = {
+    payload = {
             "filter": {
                 "and": [
                     {"property": "Email", "email": {"equals": email.strip().lower()}},
