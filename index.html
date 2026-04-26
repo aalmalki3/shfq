@@ -83,26 +83,26 @@
         <div style="display:flex; gap:1rem; flex-wrap: wrap;">
             <select id="citySelect" style="flex: 1 1 30%;">
                 <option value="" id="ui-optCity">Select Region...</option>
-                <option value="Central (Riyadh)">Central (Riyadh)</option>
-                <option value="Western (Jeddah/Makkah)">Western (Jeddah/Makkah)</option>
-                <option value="Eastern (Dammam/Khobar)">Eastern (Dammam/Khobar)</option>
-                <option value="Northern (NEOM/AlUla)">Northern (NEOM/AlUla)</option>
+                <option value="Central (Riyadh)">Central (Riyadh) | الوسطى (الرياض)</option>
+                <option value="Western (Jeddah/Makkah)">Western (Jeddah/Makkah) | الغربية (جدة/مكة)</option>
+                <option value="Eastern (Dammam/Khobar)">Eastern (Dammam/Khobar) | الشرقية (الدمام/الخبر)</option>
+                <option value="Northern (NEOM/AlUla)">Northern (NEOM/AlUla) | الشمالية (نيوم/العلا)</option>
             </select>
             <select id="indSelect" style="flex: 1 1 30%;">
                 <option value="" id="ui-optInd">Select Industry...</option>
-                <option value="Technology">Technology</option>
-                <option value="Consulting">Consulting</option>
-                <option value="Marketing / Agency">Marketing / Agency</option>
-                <option value="Engineering / O&G">Engineering / O&G</option>
-                <option value="Logistics / Supply">Logistics / Supply</option>
-                <option value="Finance & Accounting">Finance & Accounting</option>
-                <option value="Human Resources">Human Resources</option>
+                <option value="Technology">Technology | التقنية</option>
+                <option value="Consulting">Consulting | الاستشارات</option>
+                <option value="Marketing / Agency">Marketing / Agency | التسويق والوكالات</option>
+                <option value="Engineering / O&G">Engineering / O&G | الهندسة والطاقة</option>
+                <option value="Logistics / Supply">Logistics / Supply | اللوجستيات وسلاسل الإمداد</option>
+                <option value="Finance & Accounting">Finance & Accounting | المالية والمحاسبة</option>
+                <option value="Human Resources">Human Resources | الموارد البشرية</option>
             </select>
             <select id="tierSelect" style="flex: 1 1 30%;">
                 <option value="" id="ui-optTier">Select Company Tier...</option>
-                <option value="Local SME">Local SME</option>
-                <option value="Enterprise / MNC">Enterprise / MNC</option>
-                <option value="Government / PIF">Government / PIF (Giga-Project)</option>
+                <option value="Local SME">Local SME | شركات محلية (صغيرة/متوسطة)</option>
+                <option value="Enterprise / MNC">Enterprise / MNC | شركات كبرى وعالمية</option>
+                <option value="Government / PIF">Government / PIF | جهات حكومية ومشاريع كبرى</option>
             </select>
         </div>
         <button class="btn-primary" onclick="loadData('salary')" id="ui-salaryBtn">Get Market Rate (2025/2026 Data)</button>
@@ -117,7 +117,7 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzqhzz3__VJLFPwUgtGncdVP_6lWHIJTCWhpfQBIKiH4wKmA1Nf4_t3iO_zpVoqq44/exec"; // PASTE GOOGLE SCRIPT URL HERE
+    const API_URL = "https://script.google.com/macros/s/AKfycbzqhzz3__VJLFPwUgtGncdVP_6lWHIJTCWhpfQBIKiH4wKmA1Nf4_t3iO_zpVoqq44/exec"; 
     
     // State Management
     let currentLang = 'en';
@@ -213,48 +213,61 @@
                     </div>
                 </div>
             `).join('');
+            
         } else if (action === 'salary') {
             const city = document.getElementById('citySelect').value;
             const ind = document.getElementById('indSelect').value;
             const tier = document.getElementById('tierSelect').value;
 
-            // 1. Prevent blank searches
+            // 1. Prevent blank searches & Translate Error
             if (!city || !ind || !tier) {
-                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">Please select Region, Industry, and Company Tier.</strong></div>`;
+                const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار المنطقة، القطاع، وفئة الشركة.' : 'Please select Region, Industry, and Company Tier.';
+                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
                 return;
             }
 
-            // DEBUG TOOL: This prints the raw data to your browser console (F12) so you can see exactly what the database is sending.
-            console.log("Searching for:", {city, ind, tier});
-            console.log("Database payload:", data);
-
             // 2. Hyper-Resilient Matching
             const match = data.find(d => {
-                // Failsafe: Grabs the data even if Google Sheets added hidden spaces to your headers
                 const sheetRegion = d.Region || d['Region '] || d['Region\r'] || '';
                 const sheetInd = d.Industry || d['Industry '] || d['Industry\r'] || '';
                 const sheetTier = d.CompanyTier || d['CompanyTier '] || d['Company Tier'] || '';
 
-                // Exact match, ignoring casing and surrounding spaces
                 return sheetRegion.trim().toLowerCase() === city.trim().toLowerCase() &&
                        sheetInd.trim().toLowerCase() === ind.trim().toLowerCase() &&
                        sheetTier.trim().toLowerCase() === tier.trim().toLowerCase();
             });
 
             if (match) {
+                // Determine which column to pull based on current language
+                const scriptText = currentLang === 'ar' ? 
+                                  (match.NegotiationScriptAr || match['NegotiationScriptAr ']) : 
+                                  (match.NegotiationScriptEn || match['NegotiationScriptEn ']);
+
                 container.innerHTML = `
                     <div class="card">
-                        <h3 style="margin-top:0; color:var(--primary);">${dict[currentLang].expected} ${match.ExpectedSalary || match['ExpectedSalary ']}</h3>
+                        <h3 style="margin-top:0; color:var(--primary);">
+                            ${dict[currentLang].expected} <span dir="ltr" style="display:inline-block;">${match.ExpectedSalary || match['ExpectedSalary ']}</span>
+                        </h3>
                         <strong>${dict[currentLang].script}</strong>
-                        <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem;">${match['NegotiationScript' + langSuffix] || match['NegotiationScript' + langSuffix + ' ']}</p>
+                        <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem; line-height: 1.8;">
+                            ${scriptText}
+                        </p>
                     </div>`;
             } else {
+                // Translate the "Not Found" Error
+                const errorTitle = currentLang === 'ar' ? 'لا توجد بيانات لهذه المجموعة المحددة.' : 'No data found for this exact combination.';
+                const errorDesc = currentLang === 'ar' ? 
+                    `لقد بحثت عن <b>${city} + ${ind} + ${tier}</b>. هذه المجموعة غير موجودة في قاعدة البيانات حالياً.` : 
+                    `You searched for <b>${city} + ${ind} + ${tier}</b>. This specific combination does not exist in your Google Sheet yet.`;
+                
                 container.innerHTML = `
                     <div class="card" style="border-left: 4px solid var(--danger);">
-                        <strong style="color:var(--danger);">No data found for this exact combination.</strong>
-                        <p style="font-size:0.9rem; margin-top:0.5rem;">You searched for <b>${city} + ${ind} + ${tier}</b>. This specific combination does not exist in your Google Sheet yet.</p>
+                        <strong style="color:var(--danger);">${errorTitle}</strong>
+                        <p style="font-size:0.9rem; margin-top:0.5rem;">${errorDesc}</p>
                     </div>`;
-            } else if (action === 'star') {
+            }
+            
+        } else if (action === 'star') {
             container.innerHTML = data.map(item => `
                 <div class="card">
                     <h3 style="margin-top:0; color:var(--primary);">🎓 ${item.AcademicExperience}</h3>
