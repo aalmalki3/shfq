@@ -70,19 +70,42 @@
     </div>
 
     <div id="salary" class="panel">
-        <div style="display:flex; gap:1rem;">
-            <select id="citySelect">
-                <option value="" id="ui-optCity">Select City...</option>
-                <option value="Riyadh">Riyadh / الرياض</option>
-                <option value="Dubai">Dubai / دبي</option>
+        
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.875rem;">
+            <strong style="color: #1e40af; display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 Know Your Target Company Tiers:</strong>
+            <ul style="margin: 0; padding-inline-start: 1.25rem; color: #1e3a8a; line-height: 1.5;">
+                <li><strong id="ui-smeLabel">SME (Small/Medium Enterprise):</strong> Local private businesses (usually 1-250 employees). Lower baseline, higher flexibility.</li>
+                <li><strong id="ui-mncLabel">MNC / Enterprise:</strong> Multinational Corporations (e.g., Big 4, Global Tech, Aramco, SABIC). Global standard salaries.</li>
+                <li><strong id="ui-pifLabel">PIF / Giga-Projects:</strong> Government-backed entities (e.g., NEOM, Red Sea, Qiddiya). Highest baselines, high pressure.</li>
+            </ul>
+        </div>
+
+        <div style="display:flex; gap:1rem; flex-wrap: wrap;">
+            <select id="citySelect" style="flex: 1 1 30%;">
+                <option value="" id="ui-optCity">Select Region...</option>
+                <option value="Central (Riyadh)">Central (Riyadh)</option>
+                <option value="Western (Jeddah/Makkah)">Western (Jeddah/Makkah)</option>
+                <option value="Eastern (Dammam/Khobar)">Eastern (Dammam/Khobar)</option>
+                <option value="Northern (NEOM/AlUla)">Northern (NEOM/AlUla)</option>
             </select>
-            <select id="indSelect">
+            <select id="indSelect" style="flex: 1 1 30%;">
                 <option value="" id="ui-optInd">Select Industry...</option>
-                <option value="Tech">Tech / تقنية</option>
-                <option value="Consulting">Consulting / استشارات</option>
+                <option value="Technology">Technology</option>
+                <option value="Consulting">Consulting</option>
+                <option value="Marketing / Agency">Marketing / Agency</option>
+                <option value="Engineering / O&G">Engineering / O&G</option>
+                <option value="Logistics / Supply">Logistics / Supply</option>
+                <option value="Finance & Accounting">Finance & Accounting</option>
+                <option value="Human Resources">Human Resources</option>
+            </select>
+            <select id="tierSelect" style="flex: 1 1 30%;">
+                <option value="" id="ui-optTier">Select Company Tier...</option>
+                <option value="Local SME">Local SME</option>
+                <option value="Enterprise / MNC">Enterprise / MNC</option>
+                <option value="Government / PIF">Government / PIF (Giga-Project)</option>
             </select>
         </div>
-        <button class="btn-primary" onclick="loadData('salary')" id="ui-salaryBtn">Get Market Rate</button>
+        <button class="btn-primary" onclick="loadData('salary')" id="ui-salaryBtn">Get Market Rate (2025/2026 Data)</button>
         <div id="salaryContent" style="margin-top: 1.5rem;"></div>
     </div>
 
