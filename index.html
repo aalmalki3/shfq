@@ -218,35 +218,43 @@
             const ind = document.getElementById('indSelect').value;
             const tier = document.getElementById('tierSelect').value;
 
-            // Prevent blank searches
+            // 1. Prevent blank searches
             if (!city || !ind || !tier) {
-                container.innerHTML = `<div class="alert" style="display:block;">Please select Region, Industry, and Company Tier.</div>`;
+                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">Please select Region, Industry, and Company Tier.</strong></div>`;
                 return;
             }
 
-            // Resilient Matching: Ignores invisible spaces and case differences
-            const match = data.find(d => 
-                d.Region && d.Region.trim().toLowerCase() === city.trim().toLowerCase() &&
-                d.Industry && d.Industry.trim().toLowerCase() === ind.trim().toLowerCase() &&
-                d.CompanyTier && d.CompanyTier.toLowerCase().includes(tier.split(' ')[0].toLowerCase())
-            );
+            // DEBUG TOOL: This prints the raw data to your browser console (F12) so you can see exactly what the database is sending.
+            console.log("Searching for:", {city, ind, tier});
+            console.log("Database payload:", data);
+
+            // 2. Hyper-Resilient Matching
+            const match = data.find(d => {
+                // Failsafe: Grabs the data even if Google Sheets added hidden spaces to your headers
+                const sheetRegion = d.Region || d['Region '] || d['Region\r'] || '';
+                const sheetInd = d.Industry || d['Industry '] || d['Industry\r'] || '';
+                const sheetTier = d.CompanyTier || d['CompanyTier '] || d['Company Tier'] || '';
+
+                // Exact match, ignoring casing and surrounding spaces
+                return sheetRegion.trim().toLowerCase() === city.trim().toLowerCase() &&
+                       sheetInd.trim().toLowerCase() === ind.trim().toLowerCase() &&
+                       sheetTier.trim().toLowerCase() === tier.trim().toLowerCase();
+            });
 
             if (match) {
                 container.innerHTML = `
                     <div class="card">
-                        <h3 style="margin-top:0; color:var(--primary);">${dict[currentLang].expected} ${match.ExpectedSalary}</h3>
+                        <h3 style="margin-top:0; color:var(--primary);">${dict[currentLang].expected} ${match.ExpectedSalary || match['ExpectedSalary ']}</h3>
                         <strong>${dict[currentLang].script}</strong>
-                        <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem;">${match['NegotiationScript' + langSuffix]}</p>
+                        <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem;">${match['NegotiationScript' + langSuffix] || match['NegotiationScript' + langSuffix + ' ']}</p>
                     </div>`;
             } else {
-                // Tells you exactly why it failed
                 container.innerHTML = `
                     <div class="card" style="border-left: 4px solid var(--danger);">
                         <strong style="color:var(--danger);">No data found for this exact combination.</strong>
-                        <p style="font-size:0.9rem; margin-top:0.5rem;">The Google Sheet currently contains 20 sample rows. You selected a combination that has not been added to the database yet. Please add this row to your <b>Salary_Anchors</b> sheet.</p>
+                        <p style="font-size:0.9rem; margin-top:0.5rem;">You searched for <b>${city} + ${ind} + ${tier}</b>. This specific combination does not exist in your Google Sheet yet.</p>
                     </div>`;
-            }
-        } else if (action === 'star') {
+            } else if (action === 'star') {
             container.innerHTML = data.map(item => `
                 <div class="card">
                     <h3 style="margin-top:0; color:var(--primary);">🎓 ${item.AcademicExperience}</h3>
