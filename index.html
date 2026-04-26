@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,25 +7,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            /* SHFQ Brand Colors */
-            --primary: #1e3a8a; /* Deep Corporate Blue - Change this hex if logo is a different color */
-            --primary-hover: #172554; 
+            /* Changed: Mapped SHFQ official brand colors to standard UI variables */
+            --primary: #0060B3;        /* SHFQ Celtic Blue */
+            --primary-hover: #004080;  /* Manually darker blue for hover */
+            --success: #01583F;        /* SHFQ Evening Sea (Green) */
+            --danger: #A4000D;         /* SHFQ Classic Rose (Red) */
             
-            /* Standard UI Colors */
-            --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; 
-            --border: #e2e8f0; --danger: #ef4444; --success: #10b981; 
-            --font-en: 'Inter', sans-serif; --font-ar: 'Tajawal', sans-serif; 
+            /* UI colors */
+            --bg: #f1f5f9;             /* Neutral, professional light gray background */
+            --surface: #ffffff; 
+            --text-main: #0f172a; 
+            --text-muted: #64748b; 
+            --border: #e2e8f0; 
+            --font-en: 'Inter', sans-serif; 
+            --font-ar: 'Tajawal', sans-serif; 
         }
         
-        body { font-family: var(--font-en); background-color: var(--bg); color: var(--text-main); margin: 0; padding: 0; transition: all 0.3s ease; }
-        html[dir="rtl"] body { font-family: var(--font-ar); }
+        body { font-family: var(--font-ar); background-color: var(--bg); color: var(--text-main); margin: 0; padding: 0; transition: all 0.3s ease; }
+        html[dir="ltr"] body { font-family: var(--font-en); }
         
         .container { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
         
-        /* Updated Header for Logo */
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; }
         .brand-container { display: flex; align-items: center; gap: 1rem; }
-        .brand-logo { height: 48px; border-radius: 8px; object-fit: contain; }
+        /* Changed: Increased Logo Size by 20% from 48px to 58px */
+        .brand-logo { height: 58px; border-radius: 8px; object-fit: contain; }
         h1 { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--text-main); }
         
         .lang-toggle { background: transparent; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 99px; cursor: pointer; font-weight: 600; color: var(--text-main); transition: 0.2s; }
@@ -58,7 +64,7 @@
         .alert { background: #fef2f2; border-left: 4px solid var(--danger); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; }
         html[dir="rtl"] .alert { border-left: none; border-right: 4px solid var(--danger); border-radius: 8px 0 0 8px; }
         
-        .alert-safe { background: #ecfdf5; border-left: 4px solid var(--success); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; color: #065f46; }
+        .alert-safe { background: #ecfdf5; border-left: 4px solid var(--success); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; color: #fff; }
         html[dir="rtl"] .alert-safe { border-left: none; border-right: 4px solid var(--success); border-radius: 8px 0 0 8px; }
 
         .loader { text-align: center; color: var(--primary); font-weight: 500; display: none; padding: 2rem; }
@@ -74,38 +80,57 @@
     <header>
         <div class="brand-container">
             <img src="https://raw.githubusercontent.com/aalmalki3/shfq/P1/shfq.jpg" alt="SHFQ Logo" class="brand-logo">
-            <h1 id="ui-title">Career Launch</h1>
+            <h1 id="ui-title">Career Launch وبالعربية انطلاقة مهنة</h1>
         </div>
-        <button class="lang-toggle" onclick="toggleLanguage()" id="ui-langBtn">عربي</button>
+        <button class="lang-toggle" onclick="toggleLanguage()" id="ui-langBtn">English</button>
     </header>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('audit')" id="ui-tabAudit">Contract Audit</div>
-        <div class="tab" onclick="switchTab('salary')" id="ui-tabSalary">Salary Anchor</div>
-        <div class="tab" onclick="switchTab('star')" id="ui-tabStar">STAR Builder</div>
+        <div class="tab active" onclick="switchTab('star')" id="ui-tabStar">بناء نموذج STAR</div>
+        <div class="tab" onclick="switchTab('salary')" id="ui-tabSalary">مؤشر الرواتب</div>
+        <div class="tab" onclick="switchTab('audit')" id="ui-tabAudit">فحص العقد</div>
     </div>
 
-    <div id="loader" class="loader"><div class="spinner"></div><span id="ui-loading">Fetching data...</span></div>
+    <div id="loader" class="loader"><div class="spinner"></div><span id="ui-loading">جاري جلب البيانات...</span></div>
 
-    <div id="audit" class="panel active">
-        <p id="ui-auditDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">Scan your draft contract for labor law violations.</p>
-        <button class="btn-primary" onclick="loadData('audit')" id="ui-auditBtn">Start Contract Audit</button>
-        <div id="auditContent" style="margin-top: 1.5rem;"></div>
+    <div id="star" class="panel active">
+        <p id="ui-starDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.</p>
+        
+        <div style="display:flex; gap:1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <select id="starQuestionSelect" style="flex: 1 1 45%;">
+                <option value="" id="ui-optStarQ">1. اختر سؤال المقابلة...</option>
+                <option value="Complex Problem Solving">Complex Problem Solving | حل المشكلات المعقدة</option>
+                <option value="Managing Difficult Stakeholders">Managing Difficult Stakeholders | إدارة أصحاب المصلحة</option>
+                <option value="Leadership & Taking Initiative">Leadership & Taking Initiative | القيادة والمبادرة</option>
+                <option value="Working Under Pressure">Working Under Pressure | العمل تحت الضغط</option>
+                <option value="Handling Conflict & Disagreement">Handling Conflict | التعامل مع النزاعات</option>
+            </select>
+            <select id="starBackgroundSelect" style="flex: 1 1 45%;">
+                <option value="" id="ui-optStarBg">2. اختر خلفيتك أو تجربتك...</option>
+                <option value="University Project / Club">University Project / Club | مشروع جامعي / نادي</option>
+                <option value="Family Business">Family Business | الأعمال العائلية</option>
+                <option value="Freelance / Part-Time">Freelance / Part-Time | العمل الحر / بدوام جزئي</option>
+                <option value="Part-Time (Retail / Service)">Part-Time (Retail / Service) | دوام جزئي (تجزئة/خدمات)</option>
+            </select>
+        </div>
+        
+        <button class="btn-primary" onclick="loadData('star')" id="ui-starBtn">إنشاء إجابة احترافية</button>
+        <div id="starContent" style="margin-top: 1.5rem;"></div>
     </div>
 
     <div id="salary" class="panel">
         <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.875rem;">
-            <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 Know Your Target Company Tiers:</strong>
+            <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 تعرف على فئات الشركات المستهدفة:</strong>
             <ul style="margin: 0; padding-inline-start: 1.25rem; color: var(--primary-hover); line-height: 1.6;">
-                <li><strong>SME / Private Sector:</strong> <span id="ui-smeText">General private companies, startups, and local LLCs. Lower baseline, faster promotion path.</span></li>
-                <li><strong>MNC / Enterprise:</strong> <span id="ui-mncText">Multinational Corporations & Large KSA Enterprises (e.g., Big 4, STC, Aramco). Global standard salaries.</span></li>
-                <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, highly competitive.</span></li>
+                <li><strong>SME / Private Sector:</strong> <span id="ui-smeText">شركات القطاع الخاص العامة والشركات المحلية. راتب أساسي أقل، مسار ترقية أسرع.</span></li>
+                <li><strong>MNC / Enterprise:</strong> <span id="ui-mncText">الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.</span></li>
+                <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.</span></li>
             </ul>
         </div>
 
         <div style="display:flex; gap:1rem; flex-wrap: wrap;">
             <select id="citySelect" style="flex: 1 1 30%;">
-                <option value="" id="ui-optCity">Select Region...</option>
+                <option value="" id="ui-optCity">اختر المنطقة...</option>
                 <option value="Central (Riyadh)">Central (Riyadh) | الوسطى (الرياض)</option>
                 <option value="Western (Jeddah/Makkah)">Western (Jeddah/Makkah) | الغربية (جدة/مكة)</option>
                 <option value="Eastern (Dammam/Khobar)">Eastern (Dammam/Khobar) | الشرقية (الدمام/الخبر)</option>
@@ -113,7 +138,7 @@
             </select>
             
             <select id="indSelect" style="flex: 1 1 30%;">
-                <option value="" id="ui-optInd">Select Field or Sector...</option>
+                <option value="" id="ui-optInd">اختر المجال أو القطاع...</option>
                 
                 <optgroup label="Core Corporate Functions | الوظائف الأساسية">
                     <option value="Tech & Data">Tech & Data | التقنية والبيانات</option>
@@ -146,46 +171,28 @@
             </select>
 
             <select id="tierSelect" style="flex: 1 1 30%;">
-                <option value="" id="ui-optTier">Select Company Tier...</option>
+                <option value="" id="ui-optTier">اختر فئة الشركة...</option>
                 <option value="Local SME / Private">Local SME / Private | القطاع الخاص المحلي</option>
                 <option value="Enterprise / MNC">Enterprise / MNC | شركات كبرى وعالمية</option>
                 <option value="Government / PIF">Government / PIF | جهات حكومية ومشاريع كبرى</option>
             </select>
         </div>
-        <button class="btn-primary" onclick="loadData('salary')" id="ui-salaryBtn">Get Market Rate (2025/2026 Data)</button>
+        <button class="btn-primary" onclick="loadData('salary')" id="ui-salaryBtn">عرض متوسط الرواتب (بيانات 2025/2026)</button>
         <div id="salaryContent" style="margin-top: 1.5rem;"></div>
     </div>
 
-    <div id="star" class="panel">
-        <p id="ui-starDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">Translate your academic and part-time experience into professional corporate interview answers.</p>
-        
-        <div style="display:flex; gap:1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-            <select id="starQuestionSelect" style="flex: 1 1 45%;">
-                <option value="" id="ui-optStarQ">1. Select Interview Question...</option>
-                <option value="Complex Problem Solving">Complex Problem Solving | حل المشكلات المعقدة</option>
-                <option value="Managing Difficult Stakeholders">Managing Difficult Stakeholders | إدارة أصحاب المصلحة</option>
-                <option value="Leadership & Taking Initiative">Leadership & Taking Initiative | القيادة والمبادرة</option>
-                <option value="Working Under Pressure">Working Under Pressure | العمل تحت الضغط</option>
-                <option value="Handling Conflict & Disagreement">Handling Conflict | التعامل مع النزاعات</option>
-            </select>
-            <select id="starBackgroundSelect" style="flex: 1 1 45%;">
-                <option value="" id="ui-optStarBg">2. Select Your Background...</option>
-                <option value="University Project / Club">University Project / Club | مشروع جامعي / نادي</option>
-                <option value="Family Business">Family Business | الأعمال العائلية</option>
-                <option value="Freelance / Part-Time">Freelance / Part-Time | العمل الحر / بدوام جزئي</option>
-                <option value="Part-Time (Retail / Service)">Part-Time (Retail / Service) | دوام جزئي (تجزئة/خدمات)</option>
-            </select>
-        </div>
-        
-        <button class="btn-primary" onclick="loadData('star')" id="ui-starBtn">Generate Professional Answer</button>
-        <div id="starContent" style="margin-top: 1.5rem;"></div>
+    <div id="audit" class="panel">
+        <p id="ui-auditDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.</p>
+        <button class="btn-primary" onclick="loadData('audit')" id="ui-auditBtn">ابدأ فحص العقد</button>
+        <div id="auditContent" style="margin-top: 1.5rem;"></div>
     </div>
 </div>
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzqhzz3__VJLFPwUgtGncdVP_6lWHIJTCWhpfQBIKiH4wKmA1Nf4_t3iO_zpVoqq44/exec"; 
     
-    let currentLang = 'en';
+    // Changed: State now defaults to Arabic
+    let currentLang = 'ar';
     let cachedData = { audit: null, salary: null, star: null };
     let currentAuditIndex = 0;
     let currentAuditData = [];
@@ -209,7 +216,7 @@
             lblSkill: "Target Corporate Skill:", lblS: "Situation (Context):", lblT: "Task (Objective):", lblA: "Action (Execution):", lblR: "Result (Outcome):"
         },
         ar: { 
-            title: "انطلاقة مهنة", langBtn: "English", 
+            title: "Career Launch وبالعربية انطلاقة مهنة", langBtn: "English", 
             tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
             auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "ابدأ فحص العقد", 
             optCity: "اختر المنطقة...", optInd: "اختر المجال أو القطاع...", optTier: "اختر فئة الشركة...",
@@ -227,7 +234,6 @@
         }
     };
 
-    // Fallback Coaching Dictionary for STAR Builder
     const fallbackCoach = {
         "University Project / Club": {
             en: "University projects are goldmines for corporate interviews. Think of a time you mediated a group conflict, managed a tight deadline, or presented complex data to professors. Use the framework below:",
