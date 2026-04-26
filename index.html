@@ -73,10 +73,10 @@
         
         <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.875rem;">
             <strong style="color: #1e40af; display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 Know Your Target Company Tiers:</strong>
-            <ul style="margin: 0; padding-inline-start: 1.25rem; color: #1e3a8a; line-height: 1.5;">
-                <li><strong id="ui-smeLabel">SME (Small/Medium Enterprise):</strong> Local private businesses (usually 1-250 employees). Lower baseline, higher flexibility.</li>
-                <li><strong id="ui-mncLabel">MNC / Enterprise:</strong> Multinational Corporations (e.g., Big 4, Global Tech, Aramco, SABIC). Global standard salaries.</li>
-                <li><strong id="ui-pifLabel">PIF / Giga-Projects:</strong> Government-backed entities (e.g., NEOM, Red Sea, Qiddiya). Highest baselines, high pressure.</li>
+            <ul style="margin: 0; padding-inline-start: 1.25rem; color: #1e3a8a; line-height: 1.6;">
+                <li><strong>SME:</strong> <span id="ui-smeText">Local private businesses (usually 1-250 employees). Lower baseline, higher flexibility.</span></li>
+                <li><strong>MNC / Enterprise:</strong> <span id="ui-mncText">Multinational Corporations (e.g., Big 4, Global Tech, Aramco). Global standard salaries.</span></li>
+                <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, high pressure.</span></li>
             </ul>
         </div>
 
@@ -123,10 +123,36 @@
     let currentLang = 'en';
     let cachedData = { audit: null, salary: null, star: null };
 
-    // UI Dictionary
+    // Bilingual UI Dictionary (Expanded for Company Tiers)
     const dict = {
-        en: { title: "Fresh Grad Kit", langBtn: "عربي", tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Load Checklist", optCity: "Select City...", optInd: "Select Industry...", salaryBtn: "Get Market Rate", starDesc: "Map academic experience to corporate skills.", starBtn: "Load STAR Matrix", loading: "Fetching data...", yes: "YES (Contains this)", no: "NO (Safe)", expected: "Expected Salary:", script: "Negotiation Script:" },
-        ar: { title: "حقيبة حديثي التخرج", langBtn: "English", tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل.", auditBtn: "تحميل القائمة", optCity: "اختر المدينة...", optInd: "اختر القطاع...", salaryBtn: "عرض متوسط الرواتب", starDesc: "اربط خبرتك الأكاديمية بالمهارات المؤسسية.", starBtn: "تحميل النموذج", loading: "جاري جلب البيانات...", yes: "نعم (يحتوي على هذا)", no: "لا (آمن)", expected: "الراتب المتوقع:", script: "نص التفاوض:" }
+        en: { 
+            title: "Fresh Grad Kit", langBtn: "عربي", 
+            tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", 
+            auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Load Checklist", 
+            optCity: "Select Region...", optInd: "Select Industry...", optTier: "Select Company Tier...",
+            salaryBtn: "Get Market Rate (2025/2026 Data)", 
+            starDesc: "Map academic experience to corporate skills.", starBtn: "Load STAR Matrix", 
+            loading: "Fetching data...", yes: "YES (Contains this)", no: "NO (Safe)", 
+            expected: "Expected Salary:", script: "Negotiation Script:",
+            tierInfoTitle: "🏢 Know Your Target Company Tiers:",
+            smeText: "Local private businesses (usually 1-250 employees). Lower baseline, higher flexibility.",
+            mncText: "Multinational Corporations (e.g., Big 4, Global Tech, Aramco). Global standard salaries.",
+            pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, high pressure."
+        },
+        ar: { 
+            title: "حقيبة حديثي التخرج", langBtn: "English", 
+            tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
+            auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "تحميل القائمة", 
+            optCity: "اختر المنطقة...", optInd: "اختر القطاع...", optTier: "اختر فئة الشركة...",
+            salaryBtn: "عرض متوسط الرواتب (بيانات 2025/2026)", 
+            starDesc: "اربط خبرتك الأكاديمية بالمهارات المؤسسية.", starBtn: "تحميل النموذج", 
+            loading: "جاري جلب البيانات...", yes: "نعم (يحتوي على هذا)", no: "لا (آمن)", 
+            expected: "الراتب المتوقع:", script: "نص التفاوض:",
+            tierInfoTitle: "🏢 تعرف على فئات الشركات المستهدفة:",
+            smeText: "الشركات المحلية الخاصة (عادة 1-250 موظف). راتب أساسي أقل، مرونة أعلى.",
+            mncText: "الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.",
+            pifText: "المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ."
+        }
     };
 
     function toggleLanguage() {
