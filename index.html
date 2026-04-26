@@ -116,8 +116,27 @@
     </div>
 
     <div id="star" class="panel">
-        <p id="ui-starDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">Map academic experience to corporate skills.</p>
-        <button class="btn-primary" onclick="loadData('star')" id="ui-starBtn">Load STAR Matrix</button>
+        <p id="ui-starDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">Translate your academic and part-time experience into professional corporate interview answers.</p>
+        
+        <div style="display:flex; gap:1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <select id="starQuestionSelect" style="flex: 1 1 45%;">
+                <option value="" id="ui-optStarQ">1. Select Interview Question...</option>
+                <option value="Complex Problem Solving">Complex Problem Solving | حل المشكلات المعقدة</option>
+                <option value="Managing Difficult Stakeholders">Managing Difficult Stakeholders | إدارة أصحاب المصلحة</option>
+                <option value="Leadership & Taking Initiative">Leadership & Taking Initiative | القيادة والمبادرة</option>
+                <option value="Working Under Pressure">Working Under Pressure | العمل تحت الضغط</option>
+                <option value="Handling Conflict & Disagreement">Handling Conflict | التعامل مع النزاعات</option>
+            </select>
+            <select id="starBackgroundSelect" style="flex: 1 1 45%;">
+                <option value="" id="ui-optStarBg">2. Select Your Background...</option>
+                <option value="University Project / Club">University Project / Club | مشروع جامعي / نادي</option>
+                <option value="Family Business">Family Business | الأعمال العائلية</option>
+                <option value="Freelance / Part-Time">Freelance / Part-Time | العمل الحر / بدوام جزئي</option>
+                <option value="Part-Time (Retail / Service)">Part-Time (Retail / Service) | دوام جزئي (تجزئة/خدمات)</option>
+            </select>
+        </div>
+        
+        <button class="btn-primary" onclick="loadData('star')" id="ui-starBtn">Generate Professional Answer</button>
         <div id="starContent" style="margin-top: 1.5rem;"></div>
     </div>
 </div>
@@ -141,14 +160,16 @@
             auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Start Contract Audit", 
             optCity: "Select Region...", optInd: "Select Industry...", optTier: "Select Company Tier...",
             salaryBtn: "Get Market Rate (2025/2026 Data)", 
-            starDesc: "Map academic experience to corporate skills.", starBtn: "Load STAR Matrix", 
+            starDesc: "Translate your academic and part-time experience into professional corporate interview answers.", 
+            starBtn: "Generate Professional Answer", optStarQ: "1. Select Interview Question...", optStarBg: "2. Select Your Background...",
             loading: "Fetching data...", yes: "YES (Contains this)", no: "NO (Safe)", 
             expected: "Expected Salary:", script: "Negotiation Script:",
             tierInfoTitle: "🏢 Know Your Target Company Tiers:",
             smeText: "Local private businesses (usually 1-250 employees). Lower baseline, higher flexibility.",
             mncText: "Multinational Corporations (e.g., Big 4, Global Tech, Aramco). Global standard salaries.",
             pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, high pressure.",
-            nextQ: "Next Question", auditDone: "Audit Complete!", auditRestart: "Restart Audit", safeMsg: "Great, this clause is compliant."
+            nextQ: "Next Question", auditDone: "Audit Complete!", auditRestart: "Restart Audit", safeMsg: "Great, this clause is compliant.",
+            lblSkill: "Target Corporate Skill:", lblS: "Situation (Context):", lblT: "Task (Objective):", lblA: "Action (Execution):", lblR: "Result (Outcome):"
         },
         ar: { 
             title: "حقيبة حديثي التخرج", langBtn: "English", 
@@ -156,14 +177,16 @@
             auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "ابدأ فحص العقد", 
             optCity: "اختر المنطقة...", optInd: "اختر القطاع...", optTier: "اختر فئة الشركة...",
             salaryBtn: "عرض متوسط الرواتب (بيانات 2025/2026)", 
-            starDesc: "اربط خبرتك الأكاديمية بالمهارات المؤسسية.", starBtn: "تحميل النموذج", 
+            starDesc: "اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.", 
+            starBtn: "إنشاء إجابة احترافية", optStarQ: "1. اختر سؤال المقابلة...", optStarBg: "2. اختر خلفيتك أو تجربتك...",
             loading: "جاري جلب البيانات...", yes: "نعم (يحتوي على هذا)", no: "لا (آمن)", 
             expected: "الراتب المتوقع:", script: "نص التفاوض:",
             tierInfoTitle: "🏢 تعرف على فئات الشركات المستهدفة:",
             smeText: "الشركات المحلية الخاصة (عادة 1-250 موظف). راتب أساسي أقل، مرونة أعلى.",
             mncText: "الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.",
             pifText: "المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.",
-            nextQ: "السؤال التالي", auditDone: "اكتمل الفحص!", auditRestart: "إعادة الفحص", safeMsg: "ممتاز، هذا البند متوافق مع النظام."
+            nextQ: "السؤال التالي", auditDone: "اكتمل الفحص!", auditRestart: "إعادة الفحص", safeMsg: "ممتاز، هذا البند متوافق مع النظام.",
+            lblSkill: "المهارة المؤسسية المستهدفة:", lblS: "الموقف (السياق):", lblT: "المهمة (الهدف):", lblA: "الإجراء (التنفيذ):", lblR: "النتيجة (الأثر):"
         }
     };
 
@@ -376,15 +399,50 @@
             }
             
         } else if (action === 'star') {
-            container.innerHTML = data.map(item => `
-                <div class="card">
-                    <h3 style="margin-top:0; color:var(--primary);">🎓 ${item.AcademicExperience}</h3>
-                    <strong>💼 ${item['CorporateSkill' + langSuffix]}</strong>
-                    <div style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:1rem; line-height:1.8;">
-                        ${item['Template' + langSuffix]}
-                    </div>
-                </div>
-            `).join('');
+            const q = document.getElementById('starQuestionSelect').value.split('|')[0].trim();
+            const bg = document.getElementById('starBackgroundSelect').value.split('|')[0].trim();
+
+            if (!q || !bg) {
+                const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار سؤال المقابلة والخلفية.' : 'Please select Question and Background.';
+                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
+                return;
+            }
+
+            const match = data.find(d => {
+                const sheetQ = d.QuestionTypeEn || d['QuestionTypeEn '] || '';
+                const sheetBg = d.BackgroundEn || d['BackgroundEn '] || '';
+                return sheetQ.trim().toLowerCase() === q.toLowerCase() && sheetBg.trim().toLowerCase() === bg.toLowerCase();
+            });
+
+            if (match) {
+                container.innerHTML = `
+                    <div class="card">
+                        <div style="font-size:0.875rem; font-weight:700; color:var(--primary); text-transform:uppercase; margin-bottom:0.5rem;">${dict[currentLang].lblSkill} ${match['Skill' + langSuffix]}</div>
+                        <h3 style="margin-top:0; color:var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
+                            ${match['QuestionType' + langSuffix]}
+                        </h3>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color:var(--primary);">[S] ${dict[currentLang].lblS}</strong>
+                            <p style="margin-top:0.25rem;">${match['S' + langSuffix]}</p>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color:var(--primary);">[T] ${dict[currentLang].lblT}</strong>
+                            <p style="margin-top:0.25rem;">${match['T' + langSuffix]}</p>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color:var(--primary);">[A] ${dict[currentLang].lblA}</strong>
+                            <p style="margin-top:0.25rem;">${match['A' + langSuffix]}</p>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color:var(--success);">[R] ${dict[currentLang].lblR}</strong>
+                            <p style="margin-top:0.25rem;">${match['R' + langSuffix]}</p>
+                        </div>
+                    </div>`;
+            } else {
+                const errorMsg = currentLang === 'ar' ? 'عذراً، لم نقم بإضافة هذه المجموعة المحددة لقاعدة البيانات بعد.' : 'No data found for this exact combination yet.';
+                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
+            }
         }
     }
 </script>
