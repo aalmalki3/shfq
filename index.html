@@ -3,18 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MENA Fresh Grad Kit</title>
+    <title>Career Launch | انطلاقة مهنة</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f8fafc; --surface: #ffffff; --primary: #2563eb; --primary-hover: #1d4ed8; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --danger: #ef4444; --success: #10b981; --font-en: 'Inter', sans-serif; --font-ar: 'Tajawal', sans-serif; }
+        :root { 
+            /* SHFQ Brand Colors */
+            --primary: #1e3a8a; /* Deep Corporate Blue - Change this hex if logo is a different color */
+            --primary-hover: #172554; 
+            
+            /* Standard UI Colors */
+            --bg: #f8fafc; --surface: #ffffff; --text-main: #0f172a; --text-muted: #64748b; 
+            --border: #e2e8f0; --danger: #ef4444; --success: #10b981; 
+            --font-en: 'Inter', sans-serif; --font-ar: 'Tajawal', sans-serif; 
+        }
         
         body { font-family: var(--font-en); background-color: var(--bg); color: var(--text-main); margin: 0; padding: 0; transition: all 0.3s ease; }
         html[dir="rtl"] body { font-family: var(--font-ar); }
         
         .container { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
         
+        /* Updated Header for Logo */
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; }
-        h1 { font-size: 1.5rem; font-weight: 700; margin: 0; }
+        .brand-container { display: flex; align-items: center; gap: 1rem; }
+        .brand-logo { height: 48px; border-radius: 8px; object-fit: contain; }
+        h1 { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--text-main); }
         
         .lang-toggle { background: transparent; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 99px; cursor: pointer; font-weight: 600; color: var(--text-main); transition: 0.2s; }
         .lang-toggle:hover { background: var(--border); }
@@ -32,7 +44,6 @@
         button.btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 0.875rem; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-top: 1rem; }
         button.btn-primary:hover { background: var(--primary-hover); }
         
-        /* Neutral Buttons by Default */
         .action-row { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .action-btn { flex: 1; padding: 0.875rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: 0.3s; background: #94a3b8; }
         .action-btn:hover { background: #64748b; }
@@ -61,7 +72,10 @@
 
 <div class="container">
     <header>
-        <h1 id="ui-title">Fresh Grad Kit</h1>
+        <div class="brand-container">
+            <img src="https://raw.githubusercontent.com/aalmalki3/shfq/P1/shfq.jpg" alt="SHFQ Logo" class="brand-logo">
+            <h1 id="ui-title">Career Launch</h1>
+        </div>
         <button class="lang-toggle" onclick="toggleLanguage()" id="ui-langBtn">عربي</button>
     </header>
 
@@ -81,8 +95,8 @@
 
     <div id="salary" class="panel">
         <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.875rem;">
-            <strong style="color: #1e40af; display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 Know Your Target Company Tiers:</strong>
-            <ul style="margin: 0; padding-inline-start: 1.25rem; color: #1e3a8a; line-height: 1.6;">
+            <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 Know Your Target Company Tiers:</strong>
+            <ul style="margin: 0; padding-inline-start: 1.25rem; color: var(--primary-hover); line-height: 1.6;">
                 <li><strong>SME / Private Sector:</strong> <span id="ui-smeText">General private companies, startups, and local LLCs. Lower baseline, faster promotion path.</span></li>
                 <li><strong>MNC / Enterprise:</strong> <span id="ui-mncText">Multinational Corporations & Large KSA Enterprises (e.g., Big 4, STC, Aramco). Global standard salaries.</span></li>
                 <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, highly competitive.</span></li>
@@ -178,7 +192,7 @@
 
     const dict = {
         en: { 
-            title: "Fresh Grad Kit", langBtn: "عربي", 
+            title: "Career Launch", langBtn: "عربي", 
             tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", 
             auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Start Contract Audit", 
             optCity: "Select Region...", optInd: "Select Field or Sector...", optTier: "Select Company Tier...",
@@ -195,7 +209,7 @@
             lblSkill: "Target Corporate Skill:", lblS: "Situation (Context):", lblT: "Task (Objective):", lblA: "Action (Execution):", lblR: "Result (Outcome):"
         },
         ar: { 
-            title: "حقيبة حديثي التخرج", langBtn: "English", 
+            title: "انطلاقة مهنة", langBtn: "English", 
             tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
             auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "ابدأ فحص العقد", 
             optCity: "اختر المنطقة...", optInd: "اختر المجال أو القطاع...", optTier: "اختر فئة الشركة...",
@@ -292,7 +306,6 @@
         }
     }
 
-    // --- WIZARD LOGIC FOR AUDIT ---
     function renderAuditWizard() {
         const container = document.getElementById('auditContent');
         const item = currentAuditData[currentAuditIndex];
@@ -455,7 +468,6 @@
                         </div>
                     </div>`;
             } else {
-                // The brilliant fallback state!
                 const coachText = (fallbackCoach[bg] && fallbackCoach[bg][currentLang]) 
                     ? fallbackCoach[bg][currentLang] 
                     : (currentLang === 'ar' ? 'فكر في موقف واجهت فيه تحدياً، وما هي الإجراءات التي اتخذتها، وماذا كانت النتيجة النهائية.' : 'Think of a situation where you faced a challenge, the actions you took, and the final outcome.');
