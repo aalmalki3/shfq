@@ -32,12 +32,10 @@
         button.btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 0.875rem; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-top: 1rem; }
         button.btn-primary:hover { background: var(--primary-hover); }
         
-        /* Neutral Buttons by Default */
         .action-row { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .action-btn { flex: 1; padding: 0.875rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: 0.3s; background: #94a3b8; }
         .action-btn:hover { background: #64748b; }
         
-        /* Active States */
         .btn-yes.active { background: var(--danger) !important; }
         .btn-no.active { background: var(--success) !important; }
         
@@ -52,6 +50,8 @@
         .loader { text-align: center; color: var(--primary); font-weight: 500; display: none; padding: 2rem; }
         .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .fallback-box { background: #fef9c3; border: 1px solid #fde047; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; color: #854d0e; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -144,15 +144,11 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzqhzz3__VJLFPwUgtGncdVP_6lWHIJTCWhpfQBIKiH4wKmA1Nf4_t3iO_zpVoqq44/exec"; 
     
-    // State Management
     let currentLang = 'en';
     let cachedData = { audit: null, salary: null, star: null };
-    
-    // Wizard State for Audit
     let currentAuditIndex = 0;
     let currentAuditData = [];
 
-    // Bilingual UI Dictionary
     const dict = {
         en: { 
             title: "Fresh Grad Kit", langBtn: "عربي", 
@@ -190,7 +186,26 @@
         }
     };
 
-    // Database Category Translation Engine
+    // Fallback Coaching Dictionary for STAR Builder
+    const fallbackCoach = {
+        "University Project / Club": {
+            en: "University projects are goldmines for corporate interviews. Think of a time you mediated a group conflict, managed a tight deadline, or presented complex data to professors. Use the framework below:",
+            ar: "المشاريع الجامعية غنية بالتجارب التي تهم الشركات. تذكر موقفاً قمت فيه بحل خلاف بين أعضاء الفريق، أو إدارة موعد تسليم ضيق، أو عرض بيانات معقدة. استخدم الإطار أدناه:"
+        },
+        "Family Business": {
+            en: "Family businesses require high operational skills. Think of a time you handled a difficult supplier, improved a daily process (like inventory), or successfully managed an angry customer. Use the framework below:",
+            ar: "الأعمال العائلية تتطلب مهارات تشغيلية عالية. تذكر موقفاً قمت فيه بالتعامل مع مورد صعب، أو تحسين عملية يومية (كالمخزون)، أو التعامل مع عميل غاضب. استخدم الإطار أدناه:"
+        },
+        "Freelance / Part-Time": {
+            en: "Freelancing proves your self-management. Think of a time you negotiated a project scope, balanced conflicting client deadlines, or delivered beyond expectations. Use the framework below:",
+            ar: "العمل الحر يثبت قدرتك على الإدارة الذاتية. تذكر موقفاً قمت فيه بالتفاوض على نطاق مشروع، أو الموازنة بين مواعيد تسليم متعارضة، أو تجاوز توقعات العميل. استخدم الإطار أدناه:"
+        },
+        "Part-Time (Retail / Service)": {
+            en: "Retail builds incredible crisis management skills. Think of a time you de-escalated a frustrated customer, managed a POS system breakdown, or led a shift during a massive rush hour. Use the framework below:",
+            ar: "قطاع التجزئة يبني مهارات ممتازة في إدارة الأزمات. تذكر موقفاً قمت فيه بتهدئة عميل غاضب، أو إدارة عطل في النظام، أو قيادة العمل خلال وقت الذروة. استخدم الإطار أدناه:"
+        }
+    };
+
     const catDictAr = {
         "Compensation": "التعويضات المالية", "Probation": "فترة التجربة", "Termination": "إنهاء العقد",
         "Rights": "الحقوق الأساسية", "Non-Compete": "عدم المنافسة", "Leaves": "الإجازات",
@@ -256,7 +271,6 @@
         const item = currentAuditData[currentAuditIndex];
         const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
 
-        // Check if finished
         if (!item) {
             container.innerHTML = `
                 <div class="card" style="text-align:center; padding: 3rem 1rem;">
@@ -268,7 +282,6 @@
             return;
         }
 
-        // Translate Database Headers dynamically
         let categoryStr = item.Category;
         let lawStr = item.LawReference;
         
@@ -281,8 +294,7 @@
                            .replace("General MHRSD Precedents", "سوابق وزارة الموارد البشرية");
         }
 
-        const totalQ = currentAuditData.length;
-        const progressText = currentLang === 'ar' ? `سؤال ${currentAuditIndex + 1} من ${totalQ}` : `Question ${currentAuditIndex + 1} of ${totalQ}`;
+        const progressText = currentLang === 'ar' ? `سؤال ${currentAuditIndex + 1} من ${currentAuditData.length}` : `Question ${currentAuditIndex + 1} of ${currentAuditData.length}`;
 
         container.innerHTML = `
             <div class="card">
@@ -305,11 +317,9 @@
                         <strong>🚨 ${lawStr}</strong><br>
                         <span style="display:block; margin-top:0.5rem; line-height:1.6;">${item['Warning' + langSuffix]}</span>
                     </div>
-                    
                     <div id="auditSafe" class="alert-safe">
                         <strong>✅ ${dict[currentLang].safeMsg}</strong>
                     </div>
-                    
                     <button class="btn-primary" onclick="nextAuditQuestion()">${dict[currentLang].nextQ}</button>
                 </div>
             </div>
@@ -319,11 +329,7 @@
     function handleAuditAnswer(isRedFlag) {
         const btnNo = document.getElementById('btnNo');
         const btnYes = document.getElementById('btnYes');
-        
-        // Disable buttons so they can't be clicked twice
-        btnNo.disabled = true;
-        btnYes.disabled = true;
-
+        btnNo.disabled = true; btnYes.disabled = true;
         document.getElementById('auditFeedback').style.display = 'block';
         
         if (isRedFlag) {
@@ -337,12 +343,7 @@
         }
     }
 
-    function nextAuditQuestion() {
-        currentAuditIndex++;
-        renderAuditWizard();
-    }
-    // --- END WIZARD LOGIC ---
-
+    function nextAuditQuestion() { currentAuditIndex++; renderAuditWizard(); }
 
     function renderContent(action, data) {
         if (!data) return;
@@ -371,36 +372,24 @@
             });
 
             if (match) {
-                const scriptText = currentLang === 'ar' ? 
-                                  (match.NegotiationScriptAr || match['NegotiationScriptAr ']) : 
-                                  (match.NegotiationScriptEn || match['NegotiationScriptEn ']);
-
+                const scriptText = currentLang === 'ar' ? (match.NegotiationScriptAr || match['NegotiationScriptAr ']) : (match.NegotiationScriptEn || match['NegotiationScriptEn ']);
                 container.innerHTML = `
                     <div class="card">
-                        <h3 style="margin-top:0; color:var(--primary);">
-                            ${dict[currentLang].expected} <span dir="ltr" style="display:inline-block;">${match.ExpectedSalary || match['ExpectedSalary ']}</span>
-                        </h3>
+                        <h3 style="margin-top:0; color:var(--primary);">${dict[currentLang].expected} <span dir="ltr" style="display:inline-block;">${match.ExpectedSalary || match['ExpectedSalary ']}</span></h3>
                         <strong>${dict[currentLang].script}</strong>
-                        <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem; line-height: 1.8;">
-                            ${scriptText}
-                        </p>
+                        <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem; line-height: 1.8;">${scriptText}</p>
                     </div>`;
             } else {
                 const errorTitle = currentLang === 'ar' ? 'لا توجد بيانات لهذه المجموعة المحددة.' : 'No data found for this exact combination.';
-                const errorDesc = currentLang === 'ar' ? 
-                    `لقد بحثت عن <b>${city} + ${ind} + ${tier}</b>. هذه المجموعة غير موجودة في قاعدة البيانات حالياً.` : 
-                    `You searched for <b>${city} + ${ind} + ${tier}</b>. This specific combination does not exist in your Google Sheet yet.`;
-                
-                container.innerHTML = `
-                    <div class="card" style="border-left: 4px solid var(--danger);">
-                        <strong style="color:var(--danger);">${errorTitle}</strong>
-                        <p style="font-size:0.9rem; margin-top:0.5rem;">${errorDesc}</p>
-                    </div>`;
+                const errorDesc = currentLang === 'ar' ? `لقد بحثت عن <b>${city} + ${ind} + ${tier}</b>. هذه المجموعة غير موجودة في قاعدة البيانات حالياً.` : `You searched for <b>${city} + ${ind} + ${tier}</b>. This specific combination does not exist in your Google Sheet yet.`;
+                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorTitle}</strong><p style="font-size:0.9rem; margin-top:0.5rem;">${errorDesc}</p></div>`;
             }
             
         } else if (action === 'star') {
-            const q = document.getElementById('starQuestionSelect').value.split('|')[0].trim();
-            const bg = document.getElementById('starBackgroundSelect').value.split('|')[0].trim();
+            const qFull = document.getElementById('starQuestionSelect').value;
+            const bgFull = document.getElementById('starBackgroundSelect').value;
+            const q = qFull.split('|')[0].trim();
+            const bg = bgFull.split('|')[0].trim();
 
             if (!q || !bg) {
                 const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار سؤال المقابلة والخلفية.' : 'Please select Question and Background.';
@@ -421,7 +410,6 @@
                         <h3 style="margin-top:0; color:var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
                             ${match['QuestionType' + langSuffix]}
                         </h3>
-                        
                         <div style="margin-bottom: 1rem;">
                             <strong style="color:var(--primary);">[S] ${dict[currentLang].lblS}</strong>
                             <p style="margin-top:0.25rem;">${match['S' + langSuffix]}</p>
@@ -440,8 +428,24 @@
                         </div>
                     </div>`;
             } else {
-                const errorMsg = currentLang === 'ar' ? 'عذراً، لم نقم بإضافة هذه المجموعة المحددة لقاعدة البيانات بعد.' : 'No data found for this exact combination yet.';
-                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
+                // The brilliant fallback state!
+                const coachText = (fallbackCoach[bg] && fallbackCoach[bg][currentLang]) 
+                    ? fallbackCoach[bg][currentLang] 
+                    : (currentLang === 'ar' ? 'فكر في موقف واجهت فيه تحدياً، وما هي الإجراءات التي اتخذتها، وماذا كانت النتيجة النهائية.' : 'Think of a situation where you faced a challenge, the actions you took, and the final outcome.');
+                
+                const buildText = currentLang === 'ar' ? 'قم ببناء إجابتك الخاصة:' : 'Build Your Own Answer:';
+                
+                container.innerHTML = `
+                    <div class="card">
+                        <strong style="color:var(--primary); font-size:1.1rem;">💡 ${buildText}</strong>
+                        <div class="fallback-box">${coachText}</div>
+                        <div style="margin-top: 1.5rem; color: var(--text-muted);">
+                            <p><strong>[S] ${dict[currentLang].lblS}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
+                            <p><strong>[T] ${dict[currentLang].lblT}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
+                            <p><strong>[A] ${dict[currentLang].lblA}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
+                            <p><strong>[R] ${dict[currentLang].lblR}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
+                        </div>
+                    </div>`;
             }
         }
     }
