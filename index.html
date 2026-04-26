@@ -32,6 +32,7 @@
         button.btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 0.875rem; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-top: 1rem; }
         button.btn-primary:hover { background: var(--primary-hover); }
         
+        /* Neutral Buttons by Default */
         .action-row { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .action-btn { flex: 1; padding: 0.875rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: 0.3s; background: #94a3b8; }
         .action-btn:hover { background: #64748b; }
@@ -40,6 +41,8 @@
         .btn-no.active { background: var(--success) !important; }
         
         select { width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 1rem; background: var(--surface); }
+        optgroup { font-weight: 700; color: var(--primary); background: #f1f5f9; }
+        option { font-weight: 500; color: var(--text-main); background: var(--surface); }
 
         .alert { background: #fef2f2; border-left: 4px solid var(--danger); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; }
         html[dir="rtl"] .alert { border-left: none; border-right: 4px solid var(--danger); border-radius: 8px 0 0 8px; }
@@ -80,9 +83,9 @@
         <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.875rem;">
             <strong style="color: #1e40af; display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 Know Your Target Company Tiers:</strong>
             <ul style="margin: 0; padding-inline-start: 1.25rem; color: #1e3a8a; line-height: 1.6;">
-                <li><strong>SME:</strong> <span id="ui-smeText">Local private businesses (usually 1-250 employees). Lower baseline, higher flexibility.</span></li>
-                <li><strong>MNC / Enterprise:</strong> <span id="ui-mncText">Multinational Corporations (e.g., Big 4, Global Tech, Aramco). Global standard salaries.</span></li>
-                <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, high pressure.</span></li>
+                <li><strong>SME / Private Sector:</strong> <span id="ui-smeText">General private companies, startups, and local LLCs. Lower baseline, faster promotion path.</span></li>
+                <li><strong>MNC / Enterprise:</strong> <span id="ui-mncText">Multinational Corporations & Large KSA Enterprises (e.g., Big 4, STC, Aramco). Global standard salaries.</span></li>
+                <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, highly competitive.</span></li>
             </ul>
         </div>
 
@@ -94,19 +97,43 @@
                 <option value="Eastern (Dammam/Khobar)">Eastern (Dammam/Khobar) | الشرقية (الدمام/الخبر)</option>
                 <option value="Northern (NEOM/AlUla)">Northern (NEOM/AlUla) | الشمالية (نيوم/العلا)</option>
             </select>
+            
             <select id="indSelect" style="flex: 1 1 30%;">
-                <option value="" id="ui-optInd">Select Industry...</option>
-                <option value="Technology">Technology | التقنية</option>
-                <option value="Consulting">Consulting | الاستشارات</option>
-                <option value="Marketing / Agency">Marketing / Agency | التسويق والوكالات</option>
-                <option value="Engineering / O&G">Engineering / O&G | الهندسة والطاقة</option>
-                <option value="Logistics / Supply">Logistics / Supply | اللوجستيات وسلاسل الإمداد</option>
-                <option value="Finance & Accounting">Finance & Accounting | المالية والمحاسبة</option>
-                <option value="Human Resources">Human Resources | الموارد البشرية</option>
+                <option value="" id="ui-optInd">Select Field or Sector...</option>
+                
+                <optgroup label="Core Corporate Functions | الوظائف الأساسية">
+                    <option value="Tech & Data">Tech & Data | التقنية والبيانات</option>
+                    <option value="Finance & Accounting">Finance & Accounting | المالية والمحاسبة</option>
+                    <option value="HR & Administration">HR & Administration | الموارد البشرية والإدارة</option>
+                    <option value="Marketing & Creative">Marketing & Creative | التسويق والإبداع</option>
+                    <option value="Sales & Business Dev">Sales & Business Dev | المبيعات وتطوير الأعمال</option>
+                    <option value="Legal & Compliance">Legal & Compliance | الشؤون القانونية والامتثال</option>
+                    <option value="Consulting & Strategy">Consulting & Strategy | الاستشارات والاستراتيجية</option>
+                </optgroup>
+                
+                <optgroup label="Heavy Industries & Infra | الصناعات والبنية التحتية">
+                    <option value="Engineering & Construction">Engineering & Construction | الهندسة والمقاولات</option>
+                    <option value="Energy & Renewables">Energy & Renewables | الطاقة المتجددة والنفط</option>
+                    <option value="Logistics & Supply Chain">Logistics & Supply Chain | اللوجستيات وسلاسل الإمداد</option>
+                    <option value="Manufacturing & Industrial">Manufacturing & Industrial | التصنيع والصناعة</option>
+                    <option value="Mining & Minerals">Mining & Minerals | التعدين والمعادن</option>
+                    <option value="Real Estate & Property">Real Estate & Property | العقارات وإدارة الأملاك</option>
+                </optgroup>
+                
+                <optgroup label="Vision 2030 Growth Sectors | قطاعات رؤية 2030">
+                    <option value="Tourism & Entertainment">Tourism & Entertainment | السياحة والترفيه</option>
+                    <option value="Healthcare & Life Sciences">Healthcare & Life Sciences | الرعاية الصحية والعلوم</option>
+                    <option value="Defense & Security">Defense & Security | الدفاع والأمن</option>
+                    <option value="Sports & E-Sports">Sports & E-Sports | الرياضة والرياضات الإلكترونية</option>
+                    <option value="Education & Training">Education & Training | التعليم والتدريب</option>
+                    <option value="Agriculture & Food Security">Agriculture & Food Security | الزراعة والأمن الغذائي</option>
+                    <option value="ESG & Sustainability">ESG & Sustainability | البيئة والاستدامة</option>
+                </optgroup>
             </select>
+
             <select id="tierSelect" style="flex: 1 1 30%;">
                 <option value="" id="ui-optTier">Select Company Tier...</option>
-                <option value="Local SME">Local SME | شركات محلية (صغيرة/متوسطة)</option>
+                <option value="Local SME / Private">Local SME / Private | القطاع الخاص المحلي</option>
                 <option value="Enterprise / MNC">Enterprise / MNC | شركات كبرى وعالمية</option>
                 <option value="Government / PIF">Government / PIF | جهات حكومية ومشاريع كبرى</option>
             </select>
@@ -154,16 +181,16 @@
             title: "Fresh Grad Kit", langBtn: "عربي", 
             tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", 
             auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Start Contract Audit", 
-            optCity: "Select Region...", optInd: "Select Industry...", optTier: "Select Company Tier...",
+            optCity: "Select Region...", optInd: "Select Field or Sector...", optTier: "Select Company Tier...",
             salaryBtn: "Get Market Rate (2025/2026 Data)", 
             starDesc: "Translate your academic and part-time experience into professional corporate interview answers.", 
             starBtn: "Generate Professional Answer", optStarQ: "1. Select Interview Question...", optStarBg: "2. Select Your Background...",
             loading: "Fetching data...", yes: "YES (Contains this)", no: "NO (Safe)", 
             expected: "Expected Salary:", script: "Negotiation Script:",
             tierInfoTitle: "🏢 Know Your Target Company Tiers:",
-            smeText: "Local private businesses (usually 1-250 employees). Lower baseline, higher flexibility.",
-            mncText: "Multinational Corporations (e.g., Big 4, Global Tech, Aramco). Global standard salaries.",
-            pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, high pressure.",
+            smeText: "General private companies, startups, and local LLCs. Lower baseline, faster promotion path.",
+            mncText: "Multinational Corporations & Large KSA Enterprises (e.g., Big 4, STC, Aramco). Global standard salaries.",
+            pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, highly competitive.",
             nextQ: "Next Question", auditDone: "Audit Complete!", auditRestart: "Restart Audit", safeMsg: "Great, this clause is compliant.",
             lblSkill: "Target Corporate Skill:", lblS: "Situation (Context):", lblT: "Task (Objective):", lblA: "Action (Execution):", lblR: "Result (Outcome):"
         },
@@ -171,14 +198,14 @@
             title: "حقيبة حديثي التخرج", langBtn: "English", 
             tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
             auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "ابدأ فحص العقد", 
-            optCity: "اختر المنطقة...", optInd: "اختر القطاع...", optTier: "اختر فئة الشركة...",
+            optCity: "اختر المنطقة...", optInd: "اختر المجال أو القطاع...", optTier: "اختر فئة الشركة...",
             salaryBtn: "عرض متوسط الرواتب (بيانات 2025/2026)", 
             starDesc: "اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.", 
             starBtn: "إنشاء إجابة احترافية", optStarQ: "1. اختر سؤال المقابلة...", optStarBg: "2. اختر خلفيتك أو تجربتك...",
             loading: "جاري جلب البيانات...", yes: "نعم (يحتوي على هذا)", no: "لا (آمن)", 
             expected: "الراتب المتوقع:", script: "نص التفاوض:",
             tierInfoTitle: "🏢 تعرف على فئات الشركات المستهدفة:",
-            smeText: "الشركات المحلية الخاصة (عادة 1-250 موظف). راتب أساسي أقل، مرونة أعلى.",
+            smeText: "شركات القطاع الخاص العامة والشركات المحلية. راتب أساسي أقل، مسار ترقية أسرع.",
             mncText: "الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.",
             pifText: "المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.",
             nextQ: "السؤال التالي", auditDone: "اكتمل الفحص!", auditRestart: "إعادة الفحص", safeMsg: "ممتاز، هذا البند متوافق مع النظام.",
@@ -356,7 +383,7 @@
             const tier = document.getElementById('tierSelect').value;
 
             if (!city || !ind || !tier) {
-                const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار المنطقة، القطاع، وفئة الشركة.' : 'Please select Region, Industry, and Company Tier.';
+                const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار المنطقة، القطاع، وفئة الشركة.' : 'Please select Region, Field/Sector, and Company Tier.';
                 container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
                 return;
             }
