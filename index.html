@@ -42,6 +42,9 @@
         .alert { background: #fef2f2; border-left: 4px solid var(--danger); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; }
         html[dir="rtl"] .alert { border-left: none; border-right: 4px solid var(--danger); border-radius: 8px 0 0 8px; }
         
+        .alert-safe { background: #ecfdf5; border-left: 4px solid var(--success); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; color: #065f46; }
+        html[dir="rtl"] .alert-safe { border-left: none; border-right: 4px solid var(--success); border-radius: 8px 0 0 8px; }
+
         .loader { text-align: center; color: var(--primary); font-weight: 500; display: none; padding: 2rem; }
         .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -65,7 +68,7 @@
 
     <div id="audit" class="panel active">
         <p id="ui-auditDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">Scan your draft contract for labor law violations.</p>
-        <button class="btn-primary" onclick="loadData('audit')" id="ui-auditBtn">Load Checklist</button>
+        <button class="btn-primary" onclick="loadData('audit')" id="ui-auditBtn">Start Contract Audit</button>
         <div id="auditContent" style="margin-top: 1.5rem;"></div>
     </div>
 
@@ -122,13 +125,17 @@
     // State Management
     let currentLang = 'en';
     let cachedData = { audit: null, salary: null, star: null };
+    
+    // Wizard State for Audit
+    let currentAuditIndex = 0;
+    let currentAuditData = [];
 
-    // Bilingual UI Dictionary (Expanded for Company Tiers)
+    // Bilingual UI Dictionary
     const dict = {
         en: { 
             title: "Fresh Grad Kit", langBtn: "عربي", 
             tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", 
-            auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Load Checklist", 
+            auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Start Contract Audit", 
             optCity: "Select Region...", optInd: "Select Industry...", optTier: "Select Company Tier...",
             salaryBtn: "Get Market Rate (2025/2026 Data)", 
             starDesc: "Map academic experience to corporate skills.", starBtn: "Load STAR Matrix", 
@@ -137,12 +144,13 @@
             tierInfoTitle: "🏢 Know Your Target Company Tiers:",
             smeText: "Local private businesses (usually 1-250 employees). Lower baseline, higher flexibility.",
             mncText: "Multinational Corporations (e.g., Big 4, Global Tech, Aramco). Global standard salaries.",
-            pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, high pressure."
+            pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, high pressure.",
+            nextQ: "Next Question", auditDone: "Audit Complete!", auditRestart: "Restart Audit", safeMsg: "Great, this clause is compliant."
         },
         ar: { 
             title: "حقيبة حديثي التخرج", langBtn: "English", 
             tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
-            auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "تحميل القائمة", 
+            auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "ابدأ فحص العقد", 
             optCity: "اختر المنطقة...", optInd: "اختر القطاع...", optTier: "اختر فئة الشركة...",
             salaryBtn: "عرض متوسط الرواتب (بيانات 2025/2026)", 
             starDesc: "اربط خبرتك الأكاديمية بالمهارات المؤسسية.", starBtn: "تحميل النموذج", 
@@ -151,8 +159,19 @@
             tierInfoTitle: "🏢 تعرف على فئات الشركات المستهدفة:",
             smeText: "الشركات المحلية الخاصة (عادة 1-250 موظف). راتب أساسي أقل، مرونة أعلى.",
             mncText: "الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.",
-            pifText: "المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ."
+            pifText: "المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.",
+            nextQ: "السؤال التالي", auditDone: "اكتمل الفحص!", auditRestart: "إعادة الفحص", safeMsg: "ممتاز، هذا البند متوافق مع النظام."
         }
+    };
+
+    // Database Category Translation Engine
+    const catDictAr = {
+        "Compensation": "التعويضات المالية", "Probation": "فترة التجربة", "Termination": "إنهاء العقد",
+        "Rights": "الحقوق الأساسية", "Non-Compete": "عدم المنافسة", "Leaves": "الإجازات",
+        "Working Hours": "ساعات العمل", "Training": "التدريب", "Notice Period": "فترة الإشعار",
+        "Deductions": "الخصومات", "EOSB": "مكافأة نهاية الخدمة", "Relocation": "النقل والسفر",
+        "Safety": "السلامة والتأمين", "Disputes": "النزاعات العمالية", "Expenses": "النفقات والرسوم",
+        "Confidentiality": "السرية"
     };
 
     function toggleLanguage() {
@@ -160,13 +179,11 @@
         document.documentElement.dir = currentLang === 'en' ? 'ltr' : 'rtl';
         document.documentElement.lang = currentLang;
         
-        // Update Static UI
         for (const [key, value] of Object.entries(dict[currentLang])) {
             const el = document.getElementById(`ui-${key}`);
             if (el) el.innerText = value;
         }
 
-        // Re-render active dynamic content
         const activePanel = document.querySelector('.panel.active').id;
         if (cachedData[activePanel]) renderContent(activePanel, cachedData[activePanel]);
     }
@@ -190,8 +207,103 @@
             }
             document.getElementById('loader').style.display = 'none';
         }
-        renderContent(action, cachedData[action]);
+        
+        if (action === 'audit') {
+            document.getElementById('ui-auditBtn').style.display = 'none'; // Hide start button
+            currentAuditData = cachedData.audit;
+            currentAuditIndex = 0;
+            renderAuditWizard();
+        } else {
+            renderContent(action, cachedData[action]);
+        }
     }
+
+    // --- WIZARD LOGIC FOR AUDIT ---
+    function renderAuditWizard() {
+        const container = document.getElementById('auditContent');
+        const item = currentAuditData[currentAuditIndex];
+        const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
+
+        // Check if we finished all questions
+        if (!item) {
+            container.innerHTML = `
+                <div class="card" style="text-align:center; padding: 3rem 1rem;">
+                    <h3 style="color:var(--success); font-size:1.5rem; margin-bottom:0.5rem;">🎉 ${dict[currentLang].auditDone}</h3>
+                    <p style="color:var(--text-muted); margin-bottom: 2rem;">${currentLang === 'ar' ? 'لقد قمت بمراجعة جميع بنود مسودة العقد الخاصة بك.' : 'You have reviewed all clauses in your draft contract.'}</p>
+                    <button class="btn-primary" style="max-width: 250px;" onclick="currentAuditIndex=0; renderAuditWizard();">${dict[currentLang].auditRestart}</button>
+                </div>
+            `;
+            return;
+        }
+
+        // Dynamic Translation of Database Headers
+        let categoryStr = item.Category;
+        let lawStr = item.LawReference;
+        
+        if (currentLang === 'ar') {
+            categoryStr = catDictAr[item.Category.trim()] || item.Category;
+            // Translate the Law Reference prefixes
+            lawStr = lawStr.replace("Saudi Labor Law: Article", "نظام العمل السعودي: مادة");
+            lawStr = lawStr.replace("Council of Ministers Decision", "قرار مجلس الوزراء رقم");
+            lawStr = lawStr.replace("MHRSD Regulations", "لوائح وزارة الموارد البشرية");
+            lawStr = lawStr.replace("CCHI Regulations", "لوائح مجلس الضمان الصحي");
+            lawStr = lawStr.replace("General MHRSD Precedents", "سوابق وزارة الموارد البشرية");
+        }
+
+        const totalQ = currentAuditData.length;
+        const progressText = currentLang === 'ar' ? `سؤال ${currentAuditIndex + 1} من ${totalQ}` : `Question ${currentAuditIndex + 1} of ${totalQ}`;
+
+        container.innerHTML = `
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <span style="font-size:0.875rem; font-weight:700; color:var(--primary); text-transform:uppercase;">${categoryStr}</span>
+                    <span style="font-size:0.75rem; font-weight:600; color:var(--text-muted); background:var(--border); padding:0.25rem 0.75rem; border-radius:99px;">${progressText}</span>
+                </div>
+                
+                <div style="font-size:1.25rem; font-weight:600; line-height:1.5; margin-bottom:2rem;">
+                    ${item['Question' + langSuffix]}
+                </div>
+                
+                <div class="action-row" id="auditActions">
+                    <button class="action-btn btn-no" onclick="handleAuditAnswer(false)">${dict[currentLang].no}</button>
+                    <button class="action-btn btn-yes" onclick="handleAuditAnswer(true)">${dict[currentLang].yes}</button>
+                </div>
+                
+                <div id="auditFeedback" style="display:none; margin-top:1.5rem;">
+                    <div id="auditWarning" class="alert">
+                        <strong>🚨 ${lawStr}</strong><br>
+                        <span style="display:block; margin-top:0.5rem; line-height:1.6;">${item['Warning' + langSuffix]}</span>
+                    </div>
+                    
+                    <div id="auditSafe" class="alert-safe">
+                        <strong>✅ ${dict[currentLang].safeMsg}</strong>
+                    </div>
+                    
+                    <button class="btn-primary" onclick="nextAuditQuestion()">${dict[currentLang].nextQ}</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function handleAuditAnswer(isRedFlag) {
+        document.getElementById('auditActions').style.display = 'none'; // Hide Yes/No buttons
+        document.getElementById('auditFeedback').style.display = 'block'; // Show feedback area
+        
+        if (isRedFlag) {
+            document.getElementById('auditWarning').style.display = 'block';
+            document.getElementById('auditSafe').style.display = 'none';
+        } else {
+            document.getElementById('auditWarning').style.display = 'none';
+            document.getElementById('auditSafe').style.display = 'block';
+        }
+    }
+
+    function nextAuditQuestion() {
+        currentAuditIndex++;
+        renderAuditWizard();
+    }
+    // --- END WIZARD LOGIC ---
+
 
     function renderContent(action, data) {
         if (!data) return;
@@ -199,34 +311,19 @@
         const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
 
         if (action === 'audit') {
-            container.innerHTML = data.map((item, index) => `
-                <div class="card">
-                    <div style="font-size:0.875rem; font-weight:600; color:var(--primary); margin-bottom:0.5rem;">${item.Category}</div>
-                    <div style="font-size:1.1rem; font-weight:500;">${item['Question' + langSuffix]}</div>
-                    <div class="action-row">
-                        <button class="action-btn btn-yes" onclick="document.getElementById('warn_${index}').style.display='block'">${dict[currentLang].yes}</button>
-                        <button class="action-btn btn-no" onclick="document.getElementById('warn_${index}').style.display='none'">${dict[currentLang].no}</button>
-                    </div>
-                    <div id="warn_${index}" class="alert">
-                        <strong>🚨 ${item.LawReference}</strong><br>
-                        ${item['Warning' + langSuffix]}
-                    </div>
-                </div>
-            `).join('');
-            
+            // Audit rendering is now handled by renderAuditWizard()
+            renderAuditWizard();
         } else if (action === 'salary') {
             const city = document.getElementById('citySelect').value;
             const ind = document.getElementById('indSelect').value;
             const tier = document.getElementById('tierSelect').value;
 
-            // 1. Prevent blank searches & Translate Error
             if (!city || !ind || !tier) {
                 const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار المنطقة، القطاع، وفئة الشركة.' : 'Please select Region, Industry, and Company Tier.';
                 container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
                 return;
             }
 
-            // 2. Hyper-Resilient Matching
             const match = data.find(d => {
                 const sheetRegion = d.Region || d['Region '] || d['Region\r'] || '';
                 const sheetInd = d.Industry || d['Industry '] || d['Industry\r'] || '';
@@ -238,7 +335,6 @@
             });
 
             if (match) {
-                // Determine which column to pull based on current language
                 const scriptText = currentLang === 'ar' ? 
                                   (match.NegotiationScriptAr || match['NegotiationScriptAr ']) : 
                                   (match.NegotiationScriptEn || match['NegotiationScriptEn ']);
@@ -254,7 +350,6 @@
                         </p>
                     </div>`;
             } else {
-                // Translate the "Not Found" Error
                 const errorTitle = currentLang === 'ar' ? 'لا توجد بيانات لهذه المجموعة المحددة.' : 'No data found for this exact combination.';
                 const errorDesc = currentLang === 'ar' ? 
                     `لقد بحثت عن <b>${city} + ${ind} + ${tier}</b>. هذه المجموعة غير موجودة في قاعدة البيانات حالياً.` : 
