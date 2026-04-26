@@ -216,13 +216,34 @@
         } else if (action === 'salary') {
             const city = document.getElementById('citySelect').value;
             const ind = document.getElementById('indSelect').value;
-            const match = data.find(d => d.City.includes(city) && d.Industry.includes(ind));
-            if (match && city && ind) {
+            const tier = document.getElementById('tierSelect').value;
+
+            // Prevent blank searches
+            if (!city || !ind || !tier) {
+                container.innerHTML = `<div class="alert" style="display:block;">Please select Region, Industry, and Company Tier.</div>`;
+                return;
+            }
+
+            // Resilient Matching: Ignores invisible spaces and case differences
+            const match = data.find(d => 
+                d.Region && d.Region.trim().toLowerCase() === city.trim().toLowerCase() &&
+                d.Industry && d.Industry.trim().toLowerCase() === ind.trim().toLowerCase() &&
+                d.CompanyTier && d.CompanyTier.toLowerCase().includes(tier.split(' ')[0].toLowerCase())
+            );
+
+            if (match) {
                 container.innerHTML = `
                     <div class="card">
                         <h3 style="margin-top:0; color:var(--primary);">${dict[currentLang].expected} ${match.ExpectedSalary}</h3>
                         <strong>${dict[currentLang].script}</strong>
                         <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem;">${match['NegotiationScript' + langSuffix]}</p>
+                    </div>`;
+            } else {
+                // Tells you exactly why it failed
+                container.innerHTML = `
+                    <div class="card" style="border-left: 4px solid var(--danger);">
+                        <strong style="color:var(--danger);">No data found for this exact combination.</strong>
+                        <p style="font-size:0.9rem; margin-top:0.5rem;">The Google Sheet currently contains 20 sample rows. You selected a combination that has not been added to the database yet. Please add this row to your <b>Salary_Anchors</b> sheet.</p>
                     </div>`;
             }
         } else if (action === 'star') {
