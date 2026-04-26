@@ -1,520 +1,500 @@
+Confirm you are building on the latest version
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Career Launch | انطلاقة مهنة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root { 
-            /* SHFQ Exact Brand Colors */
-            --shfq-peach: #F6AD9A;
-            --shfq-slate: #304D5B;
-            
-            /* UI Colors synced to SHFQ */
-            --primary: var(--shfq-slate); 
-            --primary-hover: #1e333d; 
-            --success: #10b981; 
-            --danger: #ef4444; 
-            
-            --surface: #ffffff; 
-            --text-main: #0f172a; 
-            --text-muted: #475569; 
-            --border: #e2e8f0; 
-            --font-en: 'Inter', sans-serif; 
-            --font-ar: 'Tajawal', sans-serif; 
-        }
-        
-        /* The Full-Page SHFQ Gradient */
-        body { 
-            font-family: var(--font-ar); 
-            background: linear-gradient(135deg, var(--shfq-peach) 0%, #87A8A4 50%, var(--shfq-slate) 100%);
-            background-attachment: fixed;
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 0; 
-            min-height: 100vh;
-        }
-        html[dir="ltr"] body { font-family: var(--font-en); }
-        
-        .container { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
-        
-        /* Frosted Glass Header */
-        header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(12px);
-            padding: 1rem 1.5rem; 
-            border-radius: 16px; 
-            margin-bottom: 2rem; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-        .brand-container { display: flex; align-items: center; gap: 1rem; }
-        .brand-logo { height: 58px; border-radius: 8px; object-fit: contain; }
-        h1 { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--shfq-slate); }
-        
-        .lang-toggle { background: white; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 99px; cursor: pointer; font-weight: 600; color: var(--text-main); transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .lang-toggle:hover { background: rgba(255, 255, 255, 0.9); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Launch | انطلاقة مهنة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            /* Changed: Mapped SHFQ official brand colors to standard UI variables */
+            --primary: #0060B3;        /* SHFQ Celtic Blue */
+            --primary-hover: #004080;  /* Manually darker blue for hover */
+            --success: #01583F;        /* SHFQ Evening Sea (Green) */
+            --danger: #A4000D;         /* SHFQ Classic Rose (Red) */
+            
+            /* UI colors */
+            --bg: #f1f5f9;             /* Neutral, professional light gray background */
+            --surface: #ffffff; 
+            --text-main: #0f172a; 
+            --text-muted: #64748b; 
+            --border: #e2e8f0; 
+            --font-en: 'Inter', sans-serif; 
+            --font-ar: 'Tajawal', sans-serif; 
+        }
+        
+        body { font-family: var(--font-ar); background-color: var(--bg); color: var(--text-main); margin: 0; padding: 0; transition: all 0.3s ease; }
+        html[dir="ltr"] body { font-family: var(--font-en); }
+        
+        .container { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 2rem; }
+        .brand-container { display: flex; align-items: center; gap: 1rem; }
+        /* Changed: Increased Logo Size by 20% from 48px to 58px */
+        .brand-logo { height: 58px; border-radius: 8px; object-fit: contain; }
+        h1 { font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--text-main); }
+        
+        .lang-toggle { background: transparent; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 99px; cursor: pointer; font-weight: 600; color: var(--text-main); transition: 0.2s; }
+        .lang-toggle:hover { background: var(--border); }
 
-        /* Glass Tabs */
-        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none; padding-bottom: 0.5rem; }
-        .tab { padding: 0.75rem 1.5rem; border-radius: 99px; font-weight: 600; cursor: pointer; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.4); color: var(--text-muted); transition: 0.3s; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .tab.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 12px rgba(48, 77, 91, 0.4); }
-        
-        .panel { display: none; animation: fadeIn 0.4s ease; }
-        .panel.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none; }
+        .tab { padding: 0.75rem 1.5rem; border-radius: 99px; font-weight: 500; cursor: pointer; background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); transition: 0.2s; white-space: nowrap; }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .panel { display: none; animation: fadeIn 0.3s ease; }
+        .panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Description Box */
-        .desc-box { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; color: var(--text-muted); font-weight: 500; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        
+        button.btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 0.875rem; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-top: 1rem; }
+        button.btn-primary:hover { background: var(--primary-hover); }
+        
+        .action-row { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .action-btn { flex: 1; padding: 0.875rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: 0.3s; background: #94a3b8; }
+        .action-btn:hover { background: #64748b; }
+        
+        .btn-yes.active { background: var(--danger) !important; }
+        .btn-no.active { background: var(--success) !important; }
+        
+        select { width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 1rem; background: var(--surface); }
+        optgroup { font-weight: 700; color: var(--primary); background: #f1f5f9; }
+        option { font-weight: 500; color: var(--text-main); background: var(--surface); }
 
-        .card { background: var(--surface); border: none; border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        
-        button.btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 0.875rem; border-radius: 8px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-top: 1rem; box-shadow: 0 4px 6px rgba(48, 77, 91, 0.2); }
-        button.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
-        
-        .action-row { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .action-btn { flex: 1; padding: 0.875rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; color: white; transition: 0.3s; background: #94a3b8; }
-        .action-btn:hover { background: #64748b; }
-        
-        .btn-yes.active { background: var(--danger) !important; }
-        .btn-no.active { background: var(--success) !important; }
-        
-        select { width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 1rem; background: var(--surface); outline: none; transition: 0.2s; }
-        select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(48, 77, 91, 0.1); }
-        optgroup { font-weight: 700; color: var(--primary); background: #f1f5f9; }
-        option { font-weight: 500; color: var(--text-main); background: var(--surface); }
+        .alert { background: #fef2f2; border-left: 4px solid var(--danger); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; }
+        html[dir="rtl"] .alert { border-left: none; border-right: 4px solid var(--danger); border-radius: 8px 0 0 8px; }
+        
+        .alert-safe { background: #ecfdf5; border-left: 4px solid var(--success); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; color: #fff; }
+        html[dir="rtl"] .alert-safe { border-left: none; border-right: 4px solid var(--success); border-radius: 8px 0 0 8px; }
 
-        .alert { background: #fef2f2; border-left: 4px solid var(--danger); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; }
-        html[dir="rtl"] .alert { border-left: none; border-right: 4px solid var(--danger); border-radius: 8px 0 0 8px; }
-        
-        .alert-safe { background: #ecfdf5; border-left: 4px solid var(--success); padding: 1rem; margin-top: 1rem; border-radius: 0 8px 8px 0; display: none; color: #065f46; }
-        html[dir="rtl"] .alert-safe { border-left: none; border-right: 4px solid var(--success); border-radius: 8px 0 0 8px; }
-
-        .loader { text-align: center; color: white; font-weight: 600; display: none; padding: 2rem; background: rgba(0,0,0,0.2); border-radius: 12px; backdrop-filter: blur(4px); margin-bottom: 1rem; }
-        .spinner { border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .fallback-box { background: #fef9c3; border: 1px solid #fde047; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; color: #854d0e; line-height: 1.6; }
-    </style>
+        .loader { text-align: center; color: var(--primary); font-weight: 500; display: none; padding: 2rem; }
+        .spinner { border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .fallback-box { background: #fef9c3; border: 1px solid #fde047; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; color: #854d0e; line-height: 1.6; }
+    </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <div class="brand-container">
-            <img src="https://raw.githubusercontent.com/aalmalki3/shfq/P1/shfq.jpg" alt="SHFQ Logo" class="brand-logo">
-            <h1 id="ui-title">Career Launch وبالعربية انطلاقة مهنة</h1>
-        </div>
-        <button class="lang-toggle" onclick="toggleLanguage()" id="ui-langBtn">English</button>
-    </header>
+    <header>
+        <div class="brand-container">
+            <img src="https://raw.githubusercontent.com/aalmalki3/shfq/P1/shfq.jpg" alt="SHFQ Logo" class="brand-logo">
+            <h1 id="ui-title">انطلاقة مهنة</h1>
+        </div>
+        <button class="lang-toggle" onclick="toggleLanguage()" id="ui-langBtn">English</button>
+    </header>
 
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('star')" id="ui-tabStar">بناء نموذج STAR</div>
-        <div class="tab" onclick="switchTab('salary')" id="ui-tabSalary">مؤشر الرواتب</div>
-        <div class="tab" onclick="switchTab('audit')" id="ui-tabAudit">فحص العقد</div>
-    </div>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('star')" id="ui-tabStar">بناء نموذج STAR</div>
+        <div class="tab" onclick="switchTab('salary')" id="ui-tabSalary">مؤشر الرواتب</div>
+        <div class="tab" onclick="switchTab('audit')" id="ui-tabAudit">فحص العقد</div>
+    </div>
 
-    <div id="loader" class="loader"><div class="spinner"></div><span id="ui-loading">جاري جلب البيانات...</span></div>
+    <div id="loader" class="loader"><div class="spinner"></div><span id="ui-loading">جاري جلب البيانات...</span></div>
 
-    <div id="star" class="panel active">
-        <div class="desc-box" id="ui-starDesc">اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.</div>
-        
-        <div style="display:flex; gap:1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-            <select id="starQuestionSelect" style="flex: 1 1 45%;">
-                <option value="" id="ui-optStarQ">1. اختر سؤال المقابلة...</option>
-                <option value="Complex Problem Solving">Complex Problem Solving | حل المشكلات المعقدة</option>
-                <option value="Managing Difficult Stakeholders">Managing Difficult Stakeholders | إدارة أصحاب المصلحة</option>
-                <option value="Leadership & Taking Initiative">Leadership & Taking Initiative | القيادة والمبادرة</option>
-                <option value="Working Under Pressure">Working Under Pressure | العمل تحت الضغط</option>
-                <option value="Handling Conflict & Disagreement">Handling Conflict | التعامل مع النزاعات</option>
-            </select>
-            <select id="starBackgroundSelect" style="flex: 1 1 45%;">
-                <option value="" id="ui-optStarBg">2. اختر خلفيتك أو تجربتك...</option>
-                <option value="University Project / Club">University Project / Club | مشروع جامعي / نادي</option>
-                <option value="Family Business">Family Business | الأعمال العائلية</option>
-                <option value="Freelance / Part-Time">Freelance / Part-Time | العمل الحر / بدوام جزئي</option>
-                <option value="Part-Time (Retail / Service)">Part-Time (Retail / Service) | دوام جزئي (تجزئة/خدمات)</option>
-            </select>
-        </div>
-        
-        <button class="btn-primary" onclick="loadData('star')" id="ui-starBtn">إنشاء إجابة احترافية</button>
-        <div id="starContent" style="margin-top: 1.5rem;"></div>
-    </div>
+    <div id="star" class="panel active">
+        <p id="ui-starDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.</p>
+        
+        <div style="display:flex; gap:1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <select id="starQuestionSelect" style="flex: 1 1 45%;">
+                <option value="" id="ui-optStarQ">1. اختر سؤال المقابلة...</option>
+                <option value="Complex Problem Solving">Complex Problem Solving | حل المشكلات المعقدة</option>
+                <option value="Managing Difficult Stakeholders">Managing Difficult Stakeholders | إدارة أصحاب المصلحة</option>
+                <option value="Leadership & Taking Initiative">Leadership & Taking Initiative | القيادة والمبادرة</option>
+                <option value="Working Under Pressure">Working Under Pressure | العمل تحت الضغط</option>
+                <option value="Handling Conflict & Disagreement">Handling Conflict | التعامل مع النزاعات</option>
+            </select>
+            <select id="starBackgroundSelect" style="flex: 1 1 45%;">
+                <option value="" id="ui-optStarBg">2. اختر خلفيتك أو تجربتك...</option>
+                <option value="University Project / Club">University Project / Club | مشروع جامعي / نادي</option>
+                <option value="Family Business">Family Business | الأعمال العائلية</option>
+                <option value="Freelance / Part-Time">Freelance / Part-Time | العمل الحر / بدوام جزئي</option>
+                <option value="Part-Time (Retail / Service)">Part-Time (Retail / Service) | دوام جزئي (تجزئة/خدمات)</option>
+            </select>
+        </div>
+        
+        <button class="btn-primary" onclick="loadData('star')" id="ui-starBtn">إنشاء إجابة احترافية</button>
+        <div id="starContent" style="margin-top: 1.5rem;"></div>
+    </div>
 
-    <div id="salary" class="panel">
-        <div class="desc-box">
-            <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 تعرف على فئات الشركات المستهدفة:</strong>
-            <ul style="margin: 0; padding-inline-start: 1.25rem; color: var(--text-main); line-height: 1.6;">
-                <li><strong>SME / Private Sector:</strong> <span id="ui-smeText">شركات القطاع الخاص العامة والشركات المحلية. راتب أساسي أقل، مسار ترقية أسرع.</span></li>
-                <li><strong>MNC / Enterprise:</strong> <span id="ui-mncText">الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.</span></li>
-                <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.</span></li>
-            </ul>
-        </div>
+    <div id="salary" class="panel">
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.875rem;">
+            <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;" id="ui-tierInfoTitle">🏢 تعرف على فئات الشركات المستهدفة:</strong>
+            <ul style="margin: 0; padding-inline-start: 1.25rem; color: var(--primary-hover); line-height: 1.6;">
+                <li><strong>SME / Private Sector:</strong> <span id="ui-smeText">شركات القطاع الخاص العامة والشركات المحلية. راتب أساسي أقل، مسار ترقية أسرع.</span></li>
+                <li><strong>MNC / Enterprise:</strong> <span id="ui-mncText">الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.</span></li>
+                <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.</span></li>
+            </ul>
+        </div>
 
-        <div style="display:flex; gap:1rem; flex-wrap: wrap;">
-            <select id="citySelect" style="flex: 1 1 30%;">
-                <option value="" id="ui-optCity">اختر المنطقة...</option>
-                <option value="Central (Riyadh)">Central (Riyadh) | الوسطى (الرياض)</option>
-                <option value="Western (Jeddah/Makkah)">Western (Jeddah/Makkah) | الغربية (جدة/مكة)</option>
-                <option value="Eastern (Dammam/Khobar)">Eastern (Dammam/Khobar) | الشرقية (الدمام/الخبر)</option>
-                <option value="Northern (NEOM/AlUla)">Northern (NEOM/AlUla) | الشمالية (نيوم/العلا)</option>
-            </select>
-            
-            <select id="indSelect" style="flex: 1 1 30%;">
-                <option value="" id="ui-optInd">اختر المجال أو القطاع...</option>
-                <optgroup label="Core Corporate Functions | الوظائف الأساسية">
-                    <option value="Tech & Data">Tech & Data | التقنية والبيانات</option>
-                    <option value="Finance & Accounting">Finance & Accounting | المالية والمحاسبة</option>
-                    <option value="HR & Administration">HR & Administration | الموارد البشرية والإدارة</option>
-                    <option value="Marketing & Creative">Marketing & Creative | التسويق والإبداع</option>
-                    <option value="Sales & Business Dev">Sales & Business Dev | المبيعات وتطوير الأعمال</option>
-                    <option value="Legal & Compliance">Legal & Compliance | الشؤون القانونية والامتثال</option>
-                    <option value="Consulting & Strategy">Consulting & Strategy | الاستشارات والاستراتيجية</option>
-                </optgroup>
-                <optgroup label="Heavy Industries & Infra | الصناعات والبنية التحتية">
-                    <option value="Engineering & Construction">Engineering & Construction | الهندسة والمقاولات</option>
-                    <option value="Energy & Renewables">Energy & Renewables | الطاقة المتجددة والنفط</option>
-                    <option value="Logistics & Supply Chain">Logistics & Supply Chain | اللوجستيات وسلاسل الإمداد</option>
-                    <option value="Manufacturing & Industrial">Manufacturing & Industrial | التصنيع والصناعة</option>
-                    <option value="Mining & Minerals">Mining & Minerals | التعدين والمعادن</option>
-                    <option value="Real Estate & Property">Real Estate & Property | العقارات وإدارة الأملاك</option>
-                </optgroup>
-                <optgroup label="Vision 2030 Growth Sectors | قطاعات رؤية 2030">
-                    <option value="Tourism & Entertainment">Tourism & Entertainment | السياحة والترفيه</option>
-                    <option value="Healthcare & Life Sciences">Healthcare & Life Sciences | الرعاية الصحية والعلوم</option>
-                    <option value="Defense & Security">Defense & Security | الدفاع والأمن</option>
-                    <option value="Sports & E-Sports">Sports & E-Sports | الرياضة والرياضات الإلكترونية</option>
-                    <option value="Education & Training">Education & Training | التعليم والتدريب</option>
-                    <option value="Agriculture & Food Security">Agriculture & Food Security | الزراعة والأمن الغذائي</option>
-                    <option value="ESG & Sustainability">ESG & Sustainability | البيئة والاستدامة</option>
-                </optgroup>
-            </select>
+        <div style="display:flex; gap:1rem; flex-wrap: wrap;">
+            <select id="citySelect" style="flex: 1 1 30%;">
+                <option value="" id="ui-optCity">اختر المنطقة...</option>
+                <option value="Central (Riyadh)">Central (Riyadh) | الوسطى (الرياض)</option>
+                <option value="Western (Jeddah/Makkah)">Western (Jeddah/Makkah) | الغربية (جدة/مكة)</option>
+                <option value="Eastern (Dammam/Khobar)">Eastern (Dammam/Khobar) | الشرقية (الدمام/الخبر)</option>
+                <option value="Northern (NEOM/AlUla)">Northern (NEOM/AlUla) | الشمالية (نيوم/العلا)</option>
+            </select>
+            
+            <select id="indSelect" style="flex: 1 1 30%;">
+                <option value="" id="ui-optInd">اختر المجال أو القطاع...</option>
+                
+                <optgroup label="Core Corporate Functions | الوظائف الأساسية">
+                    <option value="Tech & Data">Tech & Data | التقنية والبيانات</option>
+                    <option value="Finance & Accounting">Finance & Accounting | المالية والمحاسبة</option>
+                    <option value="HR & Administration">HR & Administration | الموارد البشرية والإدارة</option>
+                    <option value="Marketing & Creative">Marketing & Creative | التسويق والإبداع</option>
+                    <option value="Sales & Business Dev">Sales & Business Dev | المبيعات وتطوير الأعمال</option>
+                    <option value="Legal & Compliance">Legal & Compliance | الشؤون القانونية والامتثال</option>
+                    <option value="Consulting & Strategy">Consulting & Strategy | الاستشارات والاستراتيجية</option>
+                </optgroup>
+                
+                <optgroup label="Heavy Industries & Infra | الصناعات والبنية التحتية">
+                    <option value="Engineering & Construction">Engineering & Construction | الهندسة والمقاولات</option>
+                    <option value="Energy & Renewables">Energy & Renewables | الطاقة المتجددة والنفط</option>
+                    <option value="Logistics & Supply Chain">Logistics & Supply Chain | اللوجستيات وسلاسل الإمداد</option>
+                    <option value="Manufacturing & Industrial">Manufacturing & Industrial | التصنيع والصناعة</option>
+                    <option value="Mining & Minerals">Mining & Minerals | التعدين والمعادن</option>
+                    <option value="Real Estate & Property">Real Estate & Property | العقارات وإدارة الأملاك</option>
+                </optgroup>
+                
+                <optgroup label="Vision 2030 Growth Sectors | قطاعات رؤية 2030">
+                    <option value="Tourism & Entertainment">Tourism & Entertainment | السياحة والترفيه</option>
+                    <option value="Healthcare & Life Sciences">Healthcare & Life Sciences | الرعاية الصحية والعلوم</option>
+                    <option value="Defense & Security">Defense & Security | الدفاع والأمن</option>
+                    <option value="Sports & E-Sports">Sports & E-Sports | الرياضة والرياضات الإلكترونية</option>
+                    <option value="Education & Training">Education & Training | التعليم والتدريب</option>
+                    <option value="Agriculture & Food Security">Agriculture & Food Security | الزراعة والأمن الغذائي</option>
+                    <option value="ESG & Sustainability">ESG & Sustainability | البيئة والاستدامة</option>
+                </optgroup>
+            </select>
 
-            <select id="tierSelect" style="flex: 1 1 30%;">
-                <option value="" id="ui-optTier">اختر فئة الشركة...</option>
-                <option value="Local SME / Private">Local SME / Private | القطاع الخاص المحلي</option>
-                <option value="Enterprise / MNC">Enterprise / MNC | شركات كبرى وعالمية</option>
-                <option value="Government / PIF">Government / PIF | جهات حكومية ومشاريع كبرى</option>
-            </select>
-        </div>
-        <button class="btn-primary" onclick="loadData('salary')" id="ui-salaryBtn">عرض متوسط الرواتب (بيانات 2025/2026)</button>
-        <div id="salaryContent" style="margin-top: 1.5rem;"></div>
-    </div>
+            <select id="tierSelect" style="flex: 1 1 30%;">
+                <option value="" id="ui-optTier">اختر فئة الشركة...</option>
+                <option value="Local SME / Private">Local SME / Private | القطاع الخاص المحلي</option>
+                <option value="Enterprise / MNC">Enterprise / MNC | شركات كبرى وعالمية</option>
+                <option value="Government / PIF">Government / PIF | جهات حكومية ومشاريع كبرى</option>
+            </select>
+        </div>
+        <button class="btn-primary" onclick="loadData('salary')" id="ui-salaryBtn">عرض متوسط الرواتب (بيانات 2025/2026)</button>
+        <div id="salaryContent" style="margin-top: 1.5rem;"></div>
+    </div>
 
-    <div id="audit" class="panel">
-        <div class="desc-box" id="ui-auditDesc">افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.</div>
-        <button class="btn-primary" onclick="loadData('audit')" id="ui-auditBtn">ابدأ فحص العقد</button>
-        <div id="auditContent" style="margin-top: 1.5rem;"></div>
-    </div>
+    <div id="audit" class="panel">
+        <p id="ui-auditDesc" style="color: var(--text-muted); margin-bottom: 1.5rem;">افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.</p>
+        <button class="btn-primary" onclick="loadData('audit')" id="ui-auditBtn">ابدأ فحص العقد</button>
+        <div id="auditContent" style="margin-top: 1.5rem;"></div>
+    </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbzqhzz3__VJLFPwUgtGncdVP_6lWHIJTCWhpfQBIKiH4wKmA1Nf4_t3iO_zpVoqq44/exec"; 
-    
-    let currentLang = 'ar';
-    let cachedData = { audit: null, salary: null, star: null };
-    let currentAuditIndex = 0;
-    let currentAuditData = [];
+    const API_URL = "https://script.google.com/macros/s/AKfycbzqhzz3__VJLFPwUgtGncdVP_6lWHIJTCWhpfQBIKiH4wKmA1Nf4_t3iO_zpVoqq44/exec"; 
+    
+    // Changed: State now defaults to Arabic
+    let currentLang = 'ar';
+    let cachedData = { audit: null, salary: null, star: null };
+    let currentAuditIndex = 0;
+    let currentAuditData = [];
 
-    const dict = {
-        en: { 
-            title: "Career Launch", langBtn: "عربي", 
-            tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", 
-            auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Start Contract Audit", 
-            optCity: "Select Region...", optInd: "Select Field or Sector...", optTier: "Select Company Tier...",
-            salaryBtn: "Get Market Rate (2025/2026 Data)", 
-            starDesc: "Translate your academic and part-time experience into professional corporate interview answers.", 
-            starBtn: "Generate Professional Answer", optStarQ: "1. Select Interview Question...", optStarBg: "2. Select Your Background...",
-            loading: "Fetching data...", yes: "YES (Contains this)", no: "NO (Safe)", 
-            expected: "Expected Salary:", script: "Negotiation Script:",
-            tierInfoTitle: "🏢 Know Your Target Company Tiers:",
-            smeText: "General private companies, startups, and local LLCs. Lower baseline, faster promotion path.",
-            mncText: "Multinational Corporations & Large KSA Enterprises (e.g., Big 4, STC, Aramco). Global standard salaries.",
-            pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, highly competitive.",
-            nextQ: "Next Question", auditDone: "Audit Complete!", auditRestart: "Restart Audit", safeMsg: "Great, this clause is compliant.",
-            lblSkill: "Target Corporate Skill:", lblS: "Situation (Context):", lblT: "Task (Objective):", lblA: "Action (Execution):", lblR: "Result (Outcome):"
-        },
-        ar: { 
-            title: "Career Launch وبالعربية انطلاقة مهنة", langBtn: "English", 
-            tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
-            auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "ابدأ فحص العقد", 
-            optCity: "اختر المنطقة...", optInd: "اختر المجال أو القطاع...", optTier: "اختر فئة الشركة...",
-            salaryBtn: "عرض متوسط الرواتب (بيانات 2025/2026)", 
-            starDesc: "اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.", 
-            starBtn: "إنشاء إجابة احترافية", optStarQ: "1. اختر سؤال المقابلة...", optStarBg: "2. اختر خلفيتك أو تجربتك...",
-            loading: "جاري جلب البيانات...", yes: "نعم (يحتوي على هذا)", no: "لا (آمن)", 
-            expected: "الراتب المتوقع:", script: "نص التفاوض:",
-            tierInfoTitle: "🏢 تعرف على فئات الشركات المستهدفة:",
-            smeText: "شركات القطاع الخاص العامة والشركات المحلية. راتب أساسي أقل، مسار ترقية أسرع.",
-            mncText: "الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.",
-            pifText: "المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.",
-            nextQ: "السؤال التالي", auditDone: "اكتمل الفحص!", auditRestart: "إعادة الفحص", safeMsg: "ممتاز، هذا البند متوافق مع النظام.",
-            lblSkill: "المهارة المؤسسية المستهدفة:", lblS: "الموقف (السياق):", lblT: "المهمة (الهدف):", lblA: "الإجراء (التنفيذ):", lblR: "النتيجة (الأثر):"
-        }
-    };
+    const dict = {
+        en: { 
+            title: "Career Launch", langBtn: "عربي", 
+            tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", 
+            auditDesc: "Scan your draft contract for labor law violations.", auditBtn: "Start Contract Audit", 
+            optCity: "Select Region...", optInd: "Select Field or Sector...", optTier: "Select Company Tier...",
+            salaryBtn: "Get Market Rate (2025/2026 Data)", 
+            starDesc: "Translate your academic and part-time experience into professional corporate interview answers.", 
+            starBtn: "Generate Professional Answer", optStarQ: "1. Select Interview Question...", optStarBg: "2. Select Your Background...",
+            loading: "Fetching data...", yes: "YES (Contains this)", no: "NO (Safe)", 
+            expected: "Expected Salary:", script: "Negotiation Script:",
+            tierInfoTitle: "🏢 Know Your Target Company Tiers:",
+            smeText: "General private companies, startups, and local LLCs. Lower baseline, faster promotion path.",
+            mncText: "Multinational Corporations & Large KSA Enterprises (e.g., Big 4, STC, Aramco). Global standard salaries.",
+            pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, highly competitive.",
+            nextQ: "Next Question", auditDone: "Audit Complete!", auditRestart: "Restart Audit", safeMsg: "Great, this clause is compliant.",
+            lblSkill: "Target Corporate Skill:", lblS: "Situation (Context):", lblT: "Task (Objective):", lblA: "Action (Execution):", lblR: "Result (Outcome):"
+        },
+        ar: { 
+            title: "Career Launch وبالعربية انطلاقة مهنة", langBtn: "English", 
+            tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
+            auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", auditBtn: "ابدأ فحص العقد", 
+            optCity: "اختر المنطقة...", optInd: "اختر المجال أو القطاع...", optTier: "اختر فئة الشركة...",
+            salaryBtn: "عرض متوسط الرواتب (بيانات 2025/2026)", 
+            starDesc: "اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.", 
+            starBtn: "إنشاء إجابة احترافية", optStarQ: "1. اختر سؤال المقابلة...", optStarBg: "2. اختر خلفيتك أو تجربتك...",
+            loading: "جاري جلب البيانات...", yes: "نعم (يحتوي على هذا)", no: "لا (آمن)", 
+            expected: "الراتب المتوقع:", script: "نص التفاوض:",
+            tierInfoTitle: "🏢 تعرف على فئات الشركات المستهدفة:",
+            smeText: "شركات القطاع الخاص العامة والشركات المحلية. راتب أساسي أقل، مسار ترقية أسرع.",
+            mncText: "الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.",
+            pifText: "المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.",
+            nextQ: "السؤال التالي", auditDone: "اكتمل الفحص!", auditRestart: "إعادة الفحص", safeMsg: "ممتاز، هذا البند متوافق مع النظام.",
+            lblSkill: "المهارة المؤسسية المستهدفة:", lblS: "الموقف (السياق):", lblT: "المهمة (الهدف):", lblA: "الإجراء (التنفيذ):", lblR: "النتيجة (الأثر):"
+        }
+    };
 
-    const fallbackCoach = {
-        "University Project / Club": {
-            en: "University projects are goldmines for corporate interviews. Think of a time you mediated a group conflict, managed a tight deadline, or presented complex data to professors. Use the framework below:",
-            ar: "المشاريع الجامعية غنية بالتجارب التي تهم الشركات. تذكر موقفاً قمت فيه بحل خلاف بين أعضاء الفريق، أو إدارة موعد تسليم ضيق، أو عرض بيانات معقدة. استخدم الإطار أدناه:"
-        },
-        "Family Business": {
-            en: "Family businesses require high operational skills. Think of a time you handled a difficult supplier, improved a daily process (like inventory), or successfully managed an angry customer. Use the framework below:",
-            ar: "الأعمال العائلية تتطلب مهارات تشغيلية عالية. تذكر موقفاً قمت فيه بالتعامل مع مورد صعب، أو تحسين عملية يومية (كالمخزون)، أو التعامل مع عميل غاضب. استخدم الإطار أدناه:"
-        },
-        "Freelance / Part-Time": {
-            en: "Freelancing proves your self-management. Think of a time you negotiated a project scope, balanced conflicting client deadlines, or delivered beyond expectations. Use the framework below:",
-            ar: "العمل الحر يثبت قدرتك على الإدارة الذاتية. تذكر موقفاً قمت فيه بالتفاوض على نطاق مشروع، أو الموازنة بين مواعيد تسليم متعارضة، أو تجاوز توقعات العميل. استخدم الإطار أدناه:"
-        },
-        "Part-Time (Retail / Service)": {
-            en: "Retail builds incredible crisis management skills. Think of a time you de-escalated a frustrated customer, managed a POS system breakdown, or led a shift during a massive rush hour. Use the framework below:",
-            ar: "قطاع التجزئة يبني مهارات ممتازة في إدارة الأزمات. تذكر موقفاً قمت فيه بتهدئة عميل غاضب، أو إدارة عطل في النظام، أو قيادة العمل خلال وقت الذروة. استخدم الإطار أدناه:"
-        }
-    };
+    const fallbackCoach = {
+        "University Project / Club": {
+            en: "University projects are goldmines for corporate interviews. Think of a time you mediated a group conflict, managed a tight deadline, or presented complex data to professors. Use the framework below:",
+            ar: "المشاريع الجامعية غنية بالتجارب التي تهم الشركات. تذكر موقفاً قمت فيه بحل خلاف بين أعضاء الفريق، أو إدارة موعد تسليم ضيق، أو عرض بيانات معقدة. استخدم الإطار أدناه:"
+        },
+        "Family Business": {
+            en: "Family businesses require high operational skills. Think of a time you handled a difficult supplier, improved a daily process (like inventory), or successfully managed an angry customer. Use the framework below:",
+            ar: "الأعمال العائلية تتطلب مهارات تشغيلية عالية. تذكر موقفاً قمت فيه بالتعامل مع مورد صعب، أو تحسين عملية يومية (كالمخزون)، أو التعامل مع عميل غاضب. استخدم الإطار أدناه:"
+        },
+        "Freelance / Part-Time": {
+            en: "Freelancing proves your self-management. Think of a time you negotiated a project scope, balanced conflicting client deadlines, or delivered beyond expectations. Use the framework below:",
+            ar: "العمل الحر يثبت قدرتك على الإدارة الذاتية. تذكر موقفاً قمت فيه بالتفاوض على نطاق مشروع، أو الموازنة بين مواعيد تسليم متعارضة، أو تجاوز توقعات العميل. استخدم الإطار أدناه:"
+        },
+        "Part-Time (Retail / Service)": {
+            en: "Retail builds incredible crisis management skills. Think of a time you de-escalated a frustrated customer, managed a POS system breakdown, or led a shift during a massive rush hour. Use the framework below:",
+            ar: "قطاع التجزئة يبني مهارات ممتازة في إدارة الأزمات. تذكر موقفاً قمت فيه بتهدئة عميل غاضب، أو إدارة عطل في النظام، أو قيادة العمل خلال وقت الذروة. استخدم الإطار أدناه:"
+        }
+    };
 
-    const catDictAr = {
-        "Compensation": "التعويضات المالية", "Probation": "فترة التجربة", "Termination": "إنهاء العقد",
-        "Rights": "الحقوق الأساسية", "Non-Compete": "عدم المنافسة", "Leaves": "الإجازات",
-        "Working Hours": "ساعات العمل", "Training": "التدريب", "Notice Period": "فترة الإشعار",
-        "Deductions": "الخصومات", "EOSB": "مكافأة نهاية الخدمة", "Relocation": "النقل والسفر",
-        "Safety": "السلامة والتأمين", "Disputes": "النزاعات العمالية", "Expenses": "النفقات والرسوم",
-        "Confidentiality": "السرية"
-    };
+    const catDictAr = {
+        "Compensation": "التعويضات المالية", "Probation": "فترة التجربة", "Termination": "إنهاء العقد",
+        "Rights": "الحقوق الأساسية", "Non-Compete": "عدم المنافسة", "Leaves": "الإجازات",
+        "Working Hours": "ساعات العمل", "Training": "التدريب", "Notice Period": "فترة الإشعار",
+        "Deductions": "الخصومات", "EOSB": "مكافأة نهاية الخدمة", "Relocation": "النقل والسفر",
+        "Safety": "السلامة والتأمين", "Disputes": "النزاعات العمالية", "Expenses": "النفقات والرسوم",
+        "Confidentiality": "السرية"
+    };
 
-    function toggleLanguage() {
-        currentLang = currentLang === 'en' ? 'ar' : 'en';
-        document.documentElement.dir = currentLang === 'en' ? 'ltr' : 'rtl';
-        document.documentElement.lang = currentLang;
-        
-        for (const [key, value] of Object.entries(dict[currentLang])) {
-            const el = document.getElementById(`ui-${key}`);
-            if (el) el.innerText = value;
-        }
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'ar' : 'en';
+        document.documentElement.dir = currentLang === 'en' ? 'ltr' : 'rtl';
+        document.documentElement.lang = currentLang;
+        
+        for (const [key, value] of Object.entries(dict[currentLang])) {
+            const el = document.getElementById(`ui-${key}`);
+            if (el) el.innerText = value;
+        }
 
-        const activePanel = document.querySelector('.panel.active').id;
-        if (cachedData[activePanel]) {
-            if(activePanel === 'audit' && currentAuditData.length > 0) {
-                renderAuditWizard();
-            } else {
-                renderContent(activePanel, cachedData[activePanel]);
-            }
-        }
-    }
+        const activePanel = document.querySelector('.panel.active').id;
+        if (cachedData[activePanel]) {
+            if(activePanel === 'audit' && currentAuditData.length > 0) {
+                renderAuditWizard();
+            } else {
+                renderContent(activePanel, cachedData[activePanel]);
+            }
+        }
+    }
 
-    function switchTab(panelId) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.getElementById(`ui-tab${panelId.charAt(0).toUpperCase() + panelId.slice(1)}`).classList.add('active');
-        document.getElementById(panelId).classList.add('active');
-    }
+    function switchTab(panelId) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(`ui-tab${panelId.charAt(0).toUpperCase() + panelId.slice(1)}`).classList.add('active');
+        document.getElementById(panelId).classList.add('active');
+    }
 
-    async function loadData(action) {
-        if (!cachedData[action]) {
-            document.getElementById('loader').style.display = 'block';
-            try {
-                const response = await fetch(`${API_URL}?action=${action}`);
-                const result = await response.json();
-                cachedData[action] = result.data;
-            } catch (err) {
-                alert("Database connection failed.");
-            }
-            document.getElementById('loader').style.display = 'none';
-        }
-        
-        if (action === 'audit') {
-            document.getElementById('ui-auditBtn').style.display = 'none';
-            currentAuditData = cachedData.audit;
-            currentAuditIndex = 0;
-            renderAuditWizard();
-        } else {
-            renderContent(action, cachedData[action]);
-        }
-    }
+    async function loadData(action) {
+        if (!cachedData[action]) {
+            document.getElementById('loader').style.display = 'block';
+            try {
+                const response = await fetch(`${API_URL}?action=${action}`);
+                const result = await response.json();
+                cachedData[action] = result.data;
+            } catch (err) {
+                alert("Database connection failed.");
+            }
+            document.getElementById('loader').style.display = 'none';
+        }
+        
+        if (action === 'audit') {
+            document.getElementById('ui-auditBtn').style.display = 'none';
+            currentAuditData = cachedData.audit;
+            currentAuditIndex = 0;
+            renderAuditWizard();
+        } else {
+            renderContent(action, cachedData[action]);
+        }
+    }
 
-    function renderAuditWizard() {
-        const container = document.getElementById('auditContent');
-        const item = currentAuditData[currentAuditIndex];
-        const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
+    function renderAuditWizard() {
+        const container = document.getElementById('auditContent');
+        const item = currentAuditData[currentAuditIndex];
+        const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
 
-        if (!item) {
-            container.innerHTML = `
-                <div class="card" style="text-align:center; padding: 3rem 1rem;">
-                    <h3 style="color:var(--success); font-size:1.5rem; margin-bottom:0.5rem;">🎉 ${dict[currentLang].auditDone}</h3>
-                    <p style="color:var(--text-muted); margin-bottom: 2rem;">${currentLang === 'ar' ? 'لقد قمت بمراجعة جميع بنود مسودة العقد الخاصة بك.' : 'You have reviewed all clauses in your draft contract.'}</p>
-                    <button class="btn-primary" style="max-width: 250px;" onclick="currentAuditIndex=0; renderAuditWizard();">${dict[currentLang].auditRestart}</button>
-                </div>
-            `;
-            return;
-        }
+        if (!item) {
+            container.innerHTML = `
+                <div class="card" style="text-align:center; padding: 3rem 1rem;">
+                    <h3 style="color:var(--success); font-size:1.5rem; margin-bottom:0.5rem;">🎉 ${dict[currentLang].auditDone}</h3>
+                    <p style="color:var(--text-muted); margin-bottom: 2rem;">${currentLang === 'ar' ? 'لقد قمت بمراجعة جميع بنود مسودة العقد الخاصة بك.' : 'You have reviewed all clauses in your draft contract.'}</p>
+                    <button class="btn-primary" style="max-width: 250px;" onclick="currentAuditIndex=0; renderAuditWizard();">${dict[currentLang].auditRestart}</button>
+                </div>
+            `;
+            return;
+        }
 
-        let categoryStr = item.Category;
-        let lawStr = item.LawReference;
-        
-        if (currentLang === 'ar') {
-            categoryStr = catDictAr[item.Category.trim()] || item.Category;
-            lawStr = lawStr.replace("Saudi Labor Law: Article", "نظام العمل السعودي: مادة")
-                           .replace("Council of Ministers Decision", "قرار مجلس الوزراء رقم")
-                           .replace("MHRSD Regulations", "لوائح وزارة الموارد البشرية")
-                           .replace("CCHI Regulations", "لوائح مجلس الضمان الصحي")
-                           .replace("General MHRSD Precedents", "سوابق وزارة الموارد البشرية");
-        }
+        let categoryStr = item.Category;
+        let lawStr = item.LawReference;
+        
+        if (currentLang === 'ar') {
+            categoryStr = catDictAr[item.Category.trim()] || item.Category;
+            lawStr = lawStr.replace("Saudi Labor Law: Article", "نظام العمل السعودي: مادة")
+                           .replace("Council of Ministers Decision", "قرار مجلس الوزراء رقم")
+                           .replace("MHRSD Regulations", "لوائح وزارة الموارد البشرية")
+                           .replace("CCHI Regulations", "لوائح مجلس الضمان الصحي")
+                           .replace("General MHRSD Precedents", "سوابق وزارة الموارد البشرية");
+        }
 
-        const progressText = currentLang === 'ar' ? `سؤال ${currentAuditIndex + 1} من ${currentAuditData.length}` : `Question ${currentAuditIndex + 1} of ${currentAuditData.length}`;
+        const progressText = currentLang === 'ar' ? `سؤال ${currentAuditIndex + 1} من ${currentAuditData.length}` : `Question ${currentAuditIndex + 1} of ${currentAuditData.length}`;
 
-        container.innerHTML = `
-            <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
-                    <span style="font-size:0.875rem; font-weight:700; color:var(--primary); text-transform:uppercase;">${categoryStr}</span>
-                    <span style="font-size:0.75rem; font-weight:600; color:var(--text-muted); background:var(--bg); padding:0.25rem 0.75rem; border-radius:99px;">${progressText}</span>
-                </div>
-                
-                <div style="font-size:1.25rem; font-weight:600; line-height:1.5; margin-bottom:2rem;">
-                    ${item['Question' + langSuffix]}
-                </div>
-                
-                <div class="action-row" id="auditActions">
-                    <button id="btnNo" class="action-btn" onclick="handleAuditAnswer(false)">${dict[currentLang].no}</button>
-                    <button id="btnYes" class="action-btn" onclick="handleAuditAnswer(true)">${dict[currentLang].yes}</button>
-                </div>
-                
-                <div id="auditFeedback" style="display:none; margin-top:1.5rem;">
-                    <div id="auditWarning" class="alert">
-                        <strong>🚨 ${lawStr}</strong><br>
-                        <span style="display:block; margin-top:0.5rem; line-height:1.6;">${item['Warning' + langSuffix]}</span>
-                    </div>
-                    <div id="auditSafe" class="alert-safe">
-                        <strong>✅ ${dict[currentLang].safeMsg}</strong>
-                    </div>
-                    <button class="btn-primary" onclick="nextAuditQuestion()">${dict[currentLang].nextQ}</button>
-                </div>
-            </div>
-        `;
-    }
+        container.innerHTML = `
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                    <span style="font-size:0.875rem; font-weight:700; color:var(--primary); text-transform:uppercase;">${categoryStr}</span>
+                    <span style="font-size:0.75rem; font-weight:600; color:var(--text-muted); background:var(--border); padding:0.25rem 0.75rem; border-radius:99px;">${progressText}</span>
+                </div>
+                
+                <div style="font-size:1.25rem; font-weight:600; line-height:1.5; margin-bottom:2rem;">
+                    ${item['Question' + langSuffix]}
+                </div>
+                
+                <div class="action-row" id="auditActions">
+                    <button id="btnNo" class="action-btn" onclick="handleAuditAnswer(false)">${dict[currentLang].no}</button>
+                    <button id="btnYes" class="action-btn" onclick="handleAuditAnswer(true)">${dict[currentLang].yes}</button>
+                </div>
+                
+                <div id="auditFeedback" style="display:none; margin-top:1.5rem;">
+                    <div id="auditWarning" class="alert">
+                        <strong>🚨 ${lawStr}</strong><br>
+                        <span style="display:block; margin-top:0.5rem; line-height:1.6;">${item['Warning' + langSuffix]}</span>
+                    </div>
+                    <div id="auditSafe" class="alert-safe">
+                        <strong>✅ ${dict[currentLang].safeMsg}</strong>
+                    </div>
+                    <button class="btn-primary" onclick="nextAuditQuestion()">${dict[currentLang].nextQ}</button>
+                </div>
+            </div>
+        `;
+    }
 
-    function handleAuditAnswer(isRedFlag) {
-        const btnNo = document.getElementById('btnNo');
-        const btnYes = document.getElementById('btnYes');
-        btnNo.disabled = true; btnYes.disabled = true;
-        document.getElementById('auditFeedback').style.display = 'block';
-        
-        if (isRedFlag) {
-            btnYes.classList.add('btn-yes', 'active');
-            document.getElementById('auditWarning').style.display = 'block';
-            document.getElementById('auditSafe').style.display = 'none';
-        } else {
-            btnNo.classList.add('btn-no', 'active');
-            document.getElementById('auditWarning').style.display = 'none';
-            document.getElementById('auditSafe').style.display = 'block';
-        }
-    }
+    function handleAuditAnswer(isRedFlag) {
+        const btnNo = document.getElementById('btnNo');
+        const btnYes = document.getElementById('btnYes');
+        btnNo.disabled = true; btnYes.disabled = true;
+        document.getElementById('auditFeedback').style.display = 'block';
+        
+        if (isRedFlag) {
+            btnYes.classList.add('btn-yes', 'active');
+            document.getElementById('auditWarning').style.display = 'block';
+            document.getElementById('auditSafe').style.display = 'none';
+        } else {
+            btnNo.classList.add('btn-no', 'active');
+            document.getElementById('auditWarning').style.display = 'none';
+            document.getElementById('auditSafe').style.display = 'block';
+        }
+    }
 
-    function nextAuditQuestion() { currentAuditIndex++; renderAuditWizard(); }
+    function nextAuditQuestion() { currentAuditIndex++; renderAuditWizard(); }
 
-    function renderContent(action, data) {
-        if (!data) return;
-        const container = document.getElementById(`${action}Content`);
-        const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
+    function renderContent(action, data) {
+        if (!data) return;
+        const container = document.getElementById(`${action}Content`);
+        const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
 
-        if (action === 'salary') {
-            const city = document.getElementById('citySelect').value;
-            const ind = document.getElementById('indSelect').value;
-            const tier = document.getElementById('tierSelect').value;
+        if (action === 'salary') {
+            const city = document.getElementById('citySelect').value;
+            const ind = document.getElementById('indSelect').value;
+            const tier = document.getElementById('tierSelect').value;
 
-            if (!city || !ind || !tier) {
-                const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار المنطقة، القطاع، وفئة الشركة.' : 'Please select Region, Field/Sector, and Company Tier.';
-                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
-                return;
-            }
+            if (!city || !ind || !tier) {
+                const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار المنطقة، القطاع، وفئة الشركة.' : 'Please select Region, Field/Sector, and Company Tier.';
+                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
+                return;
+            }
 
-            const match = data.find(d => {
-                const sheetRegion = d.Region || d['Region '] || d['Region\r'] || '';
-                const sheetInd = d.Industry || d['Industry '] || d['Industry\r'] || '';
-                const sheetTier = d.CompanyTier || d['CompanyTier '] || d['Company Tier'] || '';
+            const match = data.find(d => {
+                const sheetRegion = d.Region || d['Region '] || d['Region\r'] || '';
+                const sheetInd = d.Industry || d['Industry '] || d['Industry\r'] || '';
+                const sheetTier = d.CompanyTier || d['CompanyTier '] || d['Company Tier'] || '';
 
-                return sheetRegion.trim().toLowerCase() === city.trim().toLowerCase() &&
-                       sheetInd.trim().toLowerCase() === ind.trim().toLowerCase() &&
-                       sheetTier.trim().toLowerCase() === tier.trim().toLowerCase();
-            });
+                return sheetRegion.trim().toLowerCase() === city.trim().toLowerCase() &&
+                       sheetInd.trim().toLowerCase() === ind.trim().toLowerCase() &&
+                       sheetTier.trim().toLowerCase() === tier.trim().toLowerCase();
+            });
 
-            if (match) {
-                const scriptText = currentLang === 'ar' ? (match.NegotiationScriptAr || match['NegotiationScriptAr ']) : (match.NegotiationScriptEn || match['NegotiationScriptEn ']);
-                container.innerHTML = `
-                    <div class="card">
-                        <h3 style="margin-top:0; color:var(--primary);">${dict[currentLang].expected} <span dir="ltr" style="display:inline-block;">${match.ExpectedSalary || match['ExpectedSalary ']}</span></h3>
-                        <strong>${dict[currentLang].script}</strong>
-                        <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem; line-height: 1.8;">${scriptText}</p>
-                    </div>`;
-            } else {
-                const errorTitle = currentLang === 'ar' ? 'لا توجد بيانات لهذه المجموعة المحددة.' : 'No data found for this exact combination.';
-                const errorDesc = currentLang === 'ar' ? `لقد بحثت عن <b>${city} + ${ind} + ${tier}</b>. هذه المجموعة غير موجودة في قاعدة البيانات حالياً.` : `You searched for <b>${city} + ${ind} + ${tier}</b>. This specific combination does not exist in your Google Sheet yet.`;
-                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorTitle}</strong><p style="font-size:0.9rem; margin-top:0.5rem;">${errorDesc}</p></div>`;
-            }
-            
-        } else if (action === 'star') {
-            const qFull = document.getElementById('starQuestionSelect').value;
-            const bgFull = document.getElementById('starBackgroundSelect').value;
-            const q = qFull.split('|')[0].trim();
-            const bg = bgFull.split('|')[0].trim();
+            if (match) {
+                const scriptText = currentLang === 'ar' ? (match.NegotiationScriptAr || match['NegotiationScriptAr ']) : (match.NegotiationScriptEn || match['NegotiationScriptEn ']);
+                container.innerHTML = `
+                    <div class="card">
+                        <h3 style="margin-top:0; color:var(--primary);">${dict[currentLang].expected} <span dir="ltr" style="display:inline-block;">${match.ExpectedSalary || match['ExpectedSalary ']}</span></h3>
+                        <strong>${dict[currentLang].script}</strong>
+                        <p style="background:var(--bg); padding:1rem; border-radius:8px; margin-top:0.5rem; line-height: 1.8;">${scriptText}</p>
+                    </div>`;
+            } else {
+                const errorTitle = currentLang === 'ar' ? 'لا توجد بيانات لهذه المجموعة المحددة.' : 'No data found for this exact combination.';
+                const errorDesc = currentLang === 'ar' ? `لقد بحثت عن <b>${city} + ${ind} + ${tier}</b>. هذه المجموعة غير موجودة في قاعدة البيانات حالياً.` : `You searched for <b>${city} + ${ind} + ${tier}</b>. This specific combination does not exist in your Google Sheet yet.`;
+                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorTitle}</strong><p style="font-size:0.9rem; margin-top:0.5rem;">${errorDesc}</p></div>`;
+            }
+            
+        } else if (action === 'star') {
+            const qFull = document.getElementById('starQuestionSelect').value;
+            const bgFull = document.getElementById('starBackgroundSelect').value;
+            const q = qFull.split('|')[0].trim();
+            const bg = bgFull.split('|')[0].trim();
 
-            if (!q || !bg) {
-                const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار سؤال المقابلة والخلفية.' : 'Please select Question and Background.';
-                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
-                return;
-            }
+            if (!q || !bg) {
+                const errorMsg = currentLang === 'ar' ? 'الرجاء اختيار سؤال المقابلة والخلفية.' : 'Please select Question and Background.';
+                container.innerHTML = `<div class="card" style="border-left: 4px solid var(--danger);"><strong style="color:var(--danger);">${errorMsg}</strong></div>`;
+                return;
+            }
 
-            const match = data.find(d => {
-                const sheetQ = d.QuestionTypeEn || d['QuestionTypeEn '] || '';
-                const sheetBg = d.BackgroundEn || d['BackgroundEn '] || '';
-                return sheetQ.trim().toLowerCase() === q.toLowerCase() && sheetBg.trim().toLowerCase() === bg.toLowerCase();
-            });
+            const match = data.find(d => {
+                const sheetQ = d.QuestionTypeEn || d['QuestionTypeEn '] || '';
+                const sheetBg = d.BackgroundEn || d['BackgroundEn '] || '';
+                return sheetQ.trim().toLowerCase() === q.toLowerCase() && sheetBg.trim().toLowerCase() === bg.toLowerCase();
+            });
 
-            if (match) {
-                container.innerHTML = `
-                    <div class="card">
-                        <div style="font-size:0.875rem; font-weight:700; color:var(--primary); text-transform:uppercase; margin-bottom:0.5rem;">${dict[currentLang].lblSkill} ${match['Skill' + langSuffix]}</div>
-                        <h3 style="margin-top:0; color:var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
-                            ${match['QuestionType' + langSuffix]}
-                        </h3>
-                        <div style="margin-bottom: 1rem;">
-                            <strong style="color:var(--primary);">[S] ${dict[currentLang].lblS}</strong>
-                            <p style="margin-top:0.25rem;">${match['S' + langSuffix]}</p>
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <strong style="color:var(--primary);">[T] ${dict[currentLang].lblT}</strong>
-                            <p style="margin-top:0.25rem;">${match['T' + langSuffix]}</p>
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <strong style="color:var(--primary);">[A] ${dict[currentLang].lblA}</strong>
-                            <p style="margin-top:0.25rem;">${match['A' + langSuffix]}</p>
-                        </div>
-                        <div style="margin-bottom: 1rem;">
-                            <strong style="color:var(--success);">[R] ${dict[currentLang].lblR}</strong>
-                            <p style="margin-top:0.25rem;">${match['R' + langSuffix]}</p>
-                        </div>
-                    </div>`;
-            } else {
-                const coachText = (fallbackCoach[bg] && fallbackCoach[bg][currentLang]) 
-                    ? fallbackCoach[bg][currentLang] 
-                    : (currentLang === 'ar' ? 'فكر في موقف واجهت فيه تحدياً، وما هي الإجراءات التي اتخذتها، وماذا كانت النتيجة النهائية.' : 'Think of a situation where you faced a challenge, the actions you took, and the final outcome.');
-                
-                const buildText = currentLang === 'ar' ? 'قم ببناء إجابتك الخاصة:' : 'Build Your Own Answer:';
-                
-                container.innerHTML = `
-                    <div class="card">
-                        <strong style="color:var(--primary); font-size:1.1rem;">💡 ${buildText}</strong>
-                        <div class="fallback-box">${coachText}</div>
-                        <div style="margin-top: 1.5rem; color: var(--text-muted);">
-                            <p><strong>[S] ${dict[currentLang].lblS}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
-                            <p><strong>[T] ${dict[currentLang].lblT}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
-                            <p><strong>[A] ${dict[currentLang].lblA}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
-                            <p><strong>[R] ${dict[currentLang].lblR}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
-                        </div>
-                    </div>`;
-            }
-        }
-    }
+            if (match) {
+                container.innerHTML = `
+                    <div class="card">
+                        <div style="font-size:0.875rem; font-weight:700; color:var(--primary); text-transform:uppercase; margin-bottom:0.5rem;">${dict[currentLang].lblSkill} ${match['Skill' + langSuffix]}</div>
+                        <h3 style="margin-top:0; color:var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1rem;">
+                            ${match['QuestionType' + langSuffix]}
+                        </h3>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color:var(--primary);">[S] ${dict[currentLang].lblS}</strong>
+                            <p style="margin-top:0.25rem;">${match['S' + langSuffix]}</p>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color:var(--primary);">[T] ${dict[currentLang].lblT}</strong>
+                            <p style="margin-top:0.25rem;">${match['T' + langSuffix]}</p>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color:var(--primary);">[A] ${dict[currentLang].lblA}</strong>
+                            <p style="margin-top:0.25rem;">${match['A' + langSuffix]}</p>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong style="color:var(--success);">[R] ${dict[currentLang].lblR}</strong>
+                            <p style="margin-top:0.25rem;">${match['R' + langSuffix]}</p>
+                        </div>
+                    </div>`;
+            } else {
+                const coachText = (fallbackCoach[bg] && fallbackCoach[bg][currentLang]) 
+                    ? fallbackCoach[bg][currentLang] 
+                    : (currentLang === 'ar' ? 'فكر في موقف واجهت فيه تحدياً، وما هي الإجراءات التي اتخذتها، وماذا كانت النتيجة النهائية.' : 'Think of a situation where you faced a challenge, the actions you took, and the final outcome.');
+                
+                const buildText = currentLang === 'ar' ? 'قم ببناء إجابتك الخاصة:' : 'Build Your Own Answer:';
+                
+                container.innerHTML = `
+                    <div class="card">
+                        <strong style="color:var(--primary); font-size:1.1rem;">💡 ${buildText}</strong>
+                        <div class="fallback-box">${coachText}</div>
+                        <div style="margin-top: 1.5rem; color: var(--text-muted);">
+                            <p><strong>[S] ${dict[currentLang].lblS}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
+                            <p><strong>[T] ${dict[currentLang].lblT}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
+                            <p><strong>[A] ${dict[currentLang].lblA}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
+                            <p><strong>[R] ${dict[currentLang].lblR}</strong> <span style="border-bottom: 1px dotted #ccc; padding-left: 20px;">...</span></p>
+                        </div>
+                    </div>`;
+            }
+        }
+    }
 </script>
 </body>
 </html>
