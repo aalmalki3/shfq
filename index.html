@@ -212,9 +212,9 @@
         <p id="ui-auditDesc" style="color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500;">افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.</p>
         
         <div id="auditMenu" style="display: flex; flex-direction: column; gap: 1rem;">
-            <button class="btn-primary" onclick="startAudit('core')" style="background: #0f172a; padding: 1.25rem; font-size: 1.1rem; text-align: right; display: flex; justify-content: space-between;" id="ui-btnCore"><span>البنود الجوهرية (Core Terms)</span> <span>📁</span></button>
-            <button class="btn-primary" onclick="startAudit('rights')" style="background: var(--primary); padding: 1.25rem; font-size: 1.1rem; text-align: right; display: flex; justify-content: space-between;" id="ui-btnRights"><span>الحقوق والمزايا (Rights & Benefits)</span> <span>📁</span></button>
-            <button class="btn-primary" onclick="startAudit('restrictions')" style="background: var(--danger); padding: 1.25rem; font-size: 1.1rem; text-align: right; display: flex; justify-content: space-between;" id="ui-btnRest"><span>القيود والمادة 80 (Restrictions & Art. 80)</span> <span>📁</span></button>
+            <button class="menu-card-btn core" onclick="startAudit('core')" id="ui-btnCore"><span>البنود الجوهرية (Core Terms)</span> <span>📁</span></button>
+            <button class="menu-card-btn rights" onclick="startAudit('rights')" id="ui-btnRights"><span>الحقوق والمزايا (Rights & Benefits)</span> <span>📁</span></button>
+            <button class="menu-card-btn rest" onclick="startAudit('restrictions')" id="ui-btnRest"><span>القيود والمادة 80 (Restrictions & Art. 80)</span> <span>📁</span></button>
         </div>
 
         <div id="auditContent" style="margin-top: 1.5rem;"></div>
