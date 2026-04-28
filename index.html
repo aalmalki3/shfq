@@ -582,10 +582,11 @@
         }
 
         const match = cachedData.compass ? cachedData.compass.find(d => {
-    // Strips hidden spaces, markdown asterisks, and forces lowercase for a perfect match
-    let sheetCode = String(d.Code || d['Code '] || '').replace(/\*/g, '').trim().toLowerCase();
-    return sheetCode === code.trim().toLowerCase();
-}) : null;
+            // Strips hidden spaces, markdown asterisks, and forces lowercase for a perfect match
+            let sheetCode = String(d.Code || d['Code '] || '').replace(/\*/g, '').trim().toLowerCase();
+            return sheetCode === code.trim().toLowerCase();
+        }) : null;
+        
         const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
 
         if (match) {
@@ -596,10 +597,25 @@
                     <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; line-height: 1.6;">
                         ${match['Description' + langSuffix]}
                     </div>
-                    <strong style="color:var(--success); display:block; margin-bottom: 0.5rem;">${currentLang === 'en' ? 'Top Recommended Roles:' : 'أفضل الأدوار المناسبة لك:'}</strong>
-                    <ul style="line-height: 1.8; margin-top:0;">
-                        ${match['Roles' + langSuffix].split(',').map(r => `<li>${r.trim()}</li>`).join('')}
-                    </ul>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.5rem;">
+                        <div style="border: 1px solid var(--border); padding: 1rem; border-radius: 8px;">
+                            <strong style="color:var(--primary); display:block; margin-bottom: 0.5rem;">🏢 ${currentLang === 'en' ? 'Best Work Atmosphere' : 'بيئة العمل المثالية'}</strong>
+                            <p style="margin:0; font-size:0.9rem; line-height:1.6; color:var(--text-muted);">${match['Atmosphere' + langSuffix] || '---'}</p>
+                        </div>
+                        <div style="border: 1px solid var(--border); padding: 1rem; border-radius: 8px;">
+                            <strong style="color:var(--primary); display:block; margin-bottom: 0.5rem;">⚡ ${currentLang === 'en' ? 'Best Work Style' : 'أسلوب العمل المفضل'}</strong>
+                            <p style="margin:0; font-size:0.9rem; line-height:1.6; color:var(--text-muted);">${match['WorkStyle' + langSuffix] || '---'}</p>
+                        </div>
+                        <div style="border: 1px solid var(--border); padding: 1rem; border-radius: 8px;">
+                            <strong style="color:var(--primary); display:block; margin-bottom: 0.5rem;">👑 ${currentLang === 'en' ? 'Ideal Management Style' : 'أسلوب الإدارة الأنسب لك'}</strong>
+                            <p style="margin:0; font-size:0.9rem; line-height:1.6; color:var(--text-muted);">${match['Manager' + langSuffix] || '---'}</p>
+                        </div>
+                        <div style="border: 1px solid var(--border); padding: 1rem; border-radius: 8px;">
+                            <strong style="color:var(--primary); display:block; margin-bottom: 0.5rem;">🤝 ${currentLang === 'en' ? 'Best Team Dynamics' : 'ديناميكية الفريق المثالية'}</strong>
+                            <p style="margin:0; font-size:0.9rem; line-height:1.6; color:var(--text-muted);">${match['Team' + langSuffix] || '---'}</p>
+                        </div>
+                    </div>
                     
                     <div style="display:flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
                         <button class="btn-primary btn-outline" onclick="startDeepCompass()">${dict[currentLang].compassDeepBtn}</button>
