@@ -24,7 +24,6 @@
             --font-ar: 'Tajawal', sans-serif; 
         }
         
-        /* 1. تدرج لوني عمودي خفيف جداً يجمع كل ألوان SHFQ على الخلفية فقط */
         body { 
             font-family: var(--font-ar); 
             background: linear-gradient(to top, 
@@ -43,7 +42,6 @@
         
         .container { max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
         
-        /* Bright, clear, white header */
         header { 
             display: flex; justify-content: space-between; align-items: center; 
             background-color: var(--surface);
@@ -59,44 +57,22 @@
         .lang-toggle { background: var(--surface); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 99px; cursor: pointer; font-weight: 600; color: var(--text-main); transition: 0.2s; }
         .lang-toggle:hover { background: #f8fafc; }
 
-        /* 2. Bright, clear tabs WITHOUT SHADOWS */
         .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; overflow-x: auto; scrollbar-width: none; padding-bottom: 0.5rem;}
         .tab { padding: 0.875rem 1.5rem; border-radius: 99px; font-weight: 600; cursor: pointer; background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); transition: 0.3s; white-space: nowrap; box-shadow: none; }
         .tab.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: none; }
         
-        /* 3. Sub-menu buttons matching the main menu */
         .menu-card-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 1rem 1.5rem;
-            border-radius: 99px; /* الدوران المطابق للقائمة الرئيسية */
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-align: right;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: none; /* بدون ظلال */
-            font-family: inherit;
+            background: var(--surface); border: 1px solid var(--border); color: var(--text-main);
+            padding: 1rem 1.5rem; border-radius: 99px; font-size: 1.1rem; font-weight: 600;
+            text-align: right; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: all 0.2s ease; box-shadow: none; font-family: inherit;
         }
-        .menu-card-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: #f8fafc;
-        }
+        .menu-card-btn:hover { border-color: var(--primary); color: var(--primary); background: #f8fafc; }
         .menu-icon { font-size: 1.25rem; opacity: 0.8; }
 
-        /* Solid white background for the main working area */
         .panel { 
-            display: none; 
-            animation: fadeIn 0.3s ease; 
-            background: var(--surface); 
-            padding: 2rem; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* ظل خفيف جداً لفصل البطاقة عن الخلفية */
+            display: none; animation: fadeIn 0.3s ease; background: var(--surface); 
+            padding: 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); 
             border: 1px solid var(--border);
         }
         .panel.active { display: block; }
@@ -107,12 +83,14 @@
         button.btn-primary { width: 100%; background: var(--primary); color: white; border: none; padding: 0.875rem; border-radius: 99px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; margin-top: 1rem; }
         button.btn-primary:hover { background: var(--primary-hover); }
         
-        .action-row { display: flex; gap: 1rem; margin-top: 1.5rem; }
-        .action-btn { flex: 1; padding: 0.875rem; border: none; border-radius: 99px; font-weight: 600; cursor: pointer; color: white; transition: 0.3s; background: #94a3b8; }
-        .action-btn:hover { background: #64748b; }
+        .action-row { display: flex; gap: 1rem; margin-top: 1.5rem; flex-direction: column;}
+        @media (min-width: 600px) { .action-row { flex-direction: row; } }
         
-        .btn-yes.active { background: var(--danger) !important; }
-        .btn-no.active { background: var(--success) !important; }
+        .action-btn { flex: 1; padding: 1rem; border: 1px solid var(--border); border-radius: 12px; font-weight: 600; cursor: pointer; color: var(--text-main); transition: 0.3s; background: var(--surface); text-align: center; font-size: 1rem; font-family: inherit;}
+        .action-btn:hover { border-color: var(--primary); background: #f0f9ff; color: var(--primary); }
+        
+        .btn-yes.active { background: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
+        .btn-no.active { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
         
         select { width: 100%; padding: 0.875rem; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 1rem; margin-bottom: 1rem; background: var(--surface); }
         optgroup { font-weight: 700; color: var(--primary); background: #f1f5f9; }
@@ -129,6 +107,10 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         .fallback-box { background: #fef9c3; border: 1px solid #fde047; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; color: #854d0e; line-height: 1.6; }
+        
+        /* Compass Progress Bar */
+        .progress-bar-container { width: 100%; background: var(--border); height: 6px; border-radius: 3px; margin-bottom: 1.5rem; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
     </style>
 </head>
 <body>
@@ -143,16 +125,34 @@
     </header>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('star')" id="ui-tabStar">بناء نموذج STAR</div>
+        <div class="tab active" onclick="switchTab('compass')" id="ui-tabCompass">البوصلة المهنية</div>
+        <div class="tab" onclick="switchTab('star')" id="ui-tabStar">بناء نموذج STAR</div>
         <div class="tab" onclick="switchTab('salary')" id="ui-tabSalary">مؤشر الرواتب</div>
         <div class="tab" onclick="switchTab('audit')" id="ui-tabAudit">فحص العقد</div>
     </div>
 
     <div id="loader" class="loader"><div class="spinner"></div><span id="ui-loading">جاري جلب البيانات...</span></div>
 
-    <div id="star" class="panel active">
-        <p id="ui-starDesc" style="color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500;">اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.</p>
+    <div id="compass" class="panel active">
+        <p id="ui-compassDesc" style="color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500;">اكتشف مسارك المهني الأنسب بناءً على أسلوبك في حل المشكلات وبيئة العمل المفضلة لديك.</p>
         
+        <div id="compassIntro">
+            <button class="btn-primary" onclick="startCompass()" id="ui-compassStartBtn">ابدأ تحليل الشخصية المهنية (دقيقة واحدة)</button>
+        </div>
+
+        <div id="compassQuiz" style="display: none;">
+            <div class="progress-bar-container"><div class="progress-bar-fill" id="compassProgress"></div></div>
+            <div class="card">
+                <h3 id="compassQText" style="margin-top:0; color:var(--text-main); font-size: 1.25rem; line-height: 1.5; margin-bottom: 1.5rem;"></h3>
+                <div class="action-row" id="compassOptions"></div>
+            </div>
+        </div>
+
+        <div id="compassResult" style="display: none;"></div>
+    </div>
+
+    <div id="star" class="panel">
+        <p id="ui-starDesc" style="color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500;">اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.</p>
         <div style="display:flex; gap:1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
             <select id="starQuestionSelect" style="flex: 1 1 45%;">
                 <option value="" id="ui-optStarQ">1. اختر سؤال المقابلة...</option>
@@ -170,7 +170,6 @@
                 <option value="Part-Time (Retail / Service)">Part-Time (Retail / Service) | دوام جزئي (تجزئة/خدمات)</option>
             </select>
         </div>
-        
         <button class="btn-primary" onclick="loadData('star')" id="ui-starBtn">إنشاء إجابة احترافية</button>
         <div id="starContent" style="margin-top: 1.5rem;"></div>
     </div>
@@ -184,7 +183,6 @@
                 <li><strong>PIF / Giga-Projects:</strong> <span id="ui-pifText">المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.</span></li>
             </ul>
         </div>
-
         <div style="display:flex; gap:1rem; flex-wrap: wrap;">
             <select id="citySelect" style="flex: 1 1 30%;">
                 <option value="" id="ui-optCity">اختر المنطقة...</option>
@@ -193,7 +191,6 @@
                 <option value="Eastern (Dammam/Khobar)">Eastern (Dammam/Khobar) | الشرقية (الدمام/الخبر)</option>
                 <option value="Northern (NEOM/AlUla)">Northern (NEOM/AlUla) | الشمالية (نيوم/العلا)</option>
             </select>
-            
             <select id="indSelect" style="flex: 1 1 30%;">
                 <option value="" id="ui-optInd">اختر المجال أو القطاع...</option>
                 <optgroup label="Core Corporate Functions | الوظائف الأساسية">
@@ -213,17 +210,7 @@
                     <option value="Mining & Minerals">Mining & Minerals | التعدين والمعادن</option>
                     <option value="Real Estate & Property">Real Estate & Property | العقارات وإدارة الأملاك</option>
                 </optgroup>
-                <optgroup label="Vision 2030 Growth Sectors | قطاعات رؤية 2030">
-                    <option value="Tourism & Entertainment">Tourism & Entertainment | السياحة والترفيه</option>
-                    <option value="Healthcare & Life Sciences">Healthcare & Life Sciences | الرعاية الصحية والعلوم</option>
-                    <option value="Defense & Security">Defense & Security | الدفاع والأمن</option>
-                    <option value="Sports & E-Sports">Sports & E-Sports | الرياضة والرياضات الإلكترونية</option>
-                    <option value="Education & Training">Education & Training | التعليم والتدريب</option>
-                    <option value="Agriculture & Food Security">Agriculture & Food Security | الزراعة والأمن الغذائي</option>
-                    <option value="ESG & Sustainability">ESG & Sustainability | البيئة والاستدامة</option>
-                </optgroup>
             </select>
-
             <select id="tierSelect" style="flex: 1 1 30%;">
                 <option value="" id="ui-optTier">اختر فئة الشركة...</option>
                 <option value="Local SME / Private">Local SME / Private | القطاع الخاص المحلي</option>
@@ -237,7 +224,6 @@
 
     <div id="audit" class="panel">
         <p id="ui-auditDesc" style="color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500;">افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.</p>
-        
         <div id="auditMenu" style="display: flex; flex-direction: column; gap: 0.75rem;">
             <button class="menu-card-btn" onclick="startAudit('core')" id="ui-btnCore">
                 <span>البنود الجوهرية (Core Terms)</span> <span class="menu-icon">📁</span>
@@ -249,7 +235,6 @@
                 <span>القيود والمادة 80 (Restrictions & Art. 80)</span> <span class="menu-icon">📁</span>
             </button>
         </div>
-
         <div id="auditContent" style="margin-top: 1.5rem;"></div>
     </div>
 </div>
@@ -258,20 +243,27 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbzqhzz3__VJLFPwUgtGncdVP_6lWHIJTCWhpfQBIKiH4wKmA1Nf4_t3iO_zpVoqq44/exec"; 
     
     let currentLang = 'ar';
-    let cachedData = { audit: null, salary: null, star: null };
+    let cachedData = { audit: null, salary: null, star: null, compass: null };
     let currentAuditIndex = 0;
     let currentAuditData = [];
+
+    // Compass State
+    let compassQs = [];
+    let compassIndex = 0;
+    let compassAnswers = [];
+    let compassStartTime = 0;
 
     const dict = {
         en: { 
             title: "Career Launch", langBtn: "عربي", 
-            tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", 
+            tabCompass: "Career Compass", tabAudit: "Contract Audit", tabSalary: "Salary Anchor", tabStar: "STAR Builder", 
+            compassDesc: "Discover your optimal career path based on your problem-solving style and work environment preferences.",
+            compassStartBtn: "Start Career DNA Analysis (1 Min)", compassRedo: "Retake Test",
             auditDesc: "Scan your draft contract for labor law violations.", 
             btnCore: "<span>Core Terms</span> <span class='menu-icon'>📁</span>",
             btnRights: "<span>Rights & Benefits</span> <span class='menu-icon'>📁</span>",
             btnRest: "<span>Restrictions & Art. 80</span> <span class='menu-icon'>📁</span>",
-            auditSectionDone: "Section Audit Complete!",
-            backToMenu: "Back to Menu",
+            auditSectionDone: "Section Audit Complete!", backToMenu: "Back to Menu",
             optCity: "Select Region...", optInd: "Select Field or Sector...", optTier: "Select Company Tier...",
             salaryBtn: "Get Market Rate (2025/2026 Data)", 
             starDesc: "Translate your academic and part-time experience into professional corporate interview answers.", 
@@ -283,17 +275,20 @@
             mncText: "Multinational Corporations & Large KSA Enterprises (e.g., Big 4, STC, Aramco). Global standard salaries.",
             pifText: "Government-backed entities (e.g., NEOM, Qiddiya). Highest baselines, highly competitive.",
             nextQ: "Next Question", safeMsg: "Great, this clause is compliant.",
-            lblSkill: "Target Corporate Skill:", lblS: "Situation (Context):", lblT: "Task (Objective):", lblA: "Action (Execution):", lblR: "Result (Outcome):"
+            lblSkill: "Target Corporate Skill:", lblS: "Situation (Context):", lblT: "Task (Objective):", lblA: "Action (Execution):", lblR: "Result (Outcome):",
+            calibrationWarn: "⚠️ Calibration Required",
+            calibrationText: "You answered very quickly! To get an accurate Career DNA mapping, we need your natural, thoughtful responses. Please try again."
         },
         ar: { 
             title: "انطلاقة مهنة", langBtn: "English", 
-            tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
+            tabCompass: "البوصلة المهنية", tabAudit: "فحص العقد", tabSalary: "مؤشر الرواتب", tabStar: "بناء نموذج STAR", 
+            compassDesc: "اكتشف مسارك المهني الأنسب بناءً على أسلوبك في حل المشكلات وبيئة العمل المفضلة لديك.",
+            compassStartBtn: "ابدأ تحليل الشخصية المهنية (دقيقة واحدة)", compassRedo: "إعادة الاختبار",
             auditDesc: "افحص مسودة عقدك للتأكد من عدم وجود مخالفات لنظام العمل السعودي.", 
             btnCore: "<span>البنود الجوهرية (Core Terms)</span> <span class='menu-icon'>📁</span>",
             btnRights: "<span>الحقوق والمزايا (Rights & Benefits)</span> <span class='menu-icon'>📁</span>",
             btnRest: "<span>القيود والمادة 80 (Restrictions & Art. 80)</span> <span class='menu-icon'>📁</span>",
-            auditSectionDone: "اكتمل فحص هذا القسم!",
-            backToMenu: "العودة للقائمة الرئيسية",
+            auditSectionDone: "اكتمل فحص هذا القسم!", backToMenu: "العودة للقائمة الرئيسية",
             optCity: "اختر المنطقة...", optInd: "اختر المجال أو القطاع...", optTier: "اختر فئة الشركة...",
             salaryBtn: "عرض متوسط الرواتب (بيانات 2025/2026)", 
             starDesc: "اربط خبرتك الأكاديمية والعمل الجزئي بإجابات احترافية لمقابلات الشركات الكبرى.", 
@@ -305,9 +300,39 @@
             mncText: "الشركات الكبرى/العالمية (مثل الأربعة الكبار، التقنية العالمية، أرامكو). رواتب بمعايير عالمية.",
             pifText: "المشاريع الكبرى والجهات المدعومة حكومياً (مثل نيوم، القدية). أعلى الرواتب، ضغط عمل عالٍ.",
             nextQ: "السؤال التالي", safeMsg: "ممتاز، هذا البند متوافق مع النظام.",
-            lblSkill: "المهارة المؤسسية المستهدفة:", lblS: "الموقف (السياق):", lblT: "المهمة (الهدف):", lblA: "الإجراء (التنفيذ):", lblR: "النتيجة (الأثر):"
+            lblSkill: "المهارة المؤسسية المستهدفة:", lblS: "الموقف (السياق):", lblT: "المهمة (الهدف):", lblA: "الإجراء (التنفيذ):", lblR: "النتيجة (الأثر):",
+            calibrationWarn: "⚠️ جودة الإجابات",
+            calibrationText: "لقد أجبت بسرعة كبيرة! للحصول على خريطة دقيقة لمسارك المهني، نرجو قراءة الخيارات بتأنٍ والتفكير في طبيعتك الحقيقية. يرجى المحاولة مرة أخرى."
         }
     };
+
+    const initCompassQuestions = () => [
+        { 
+            q_en: "If faced with a complex issue, would you rather:", q_ar: "إذا واجهت مشكلة معقدة، هل تفضل أن:", 
+            opt1: { val: 'R', en: 'Fix the technical or mechanical failure', ar: 'تصلح الخلل التقني أو الميكانيكي بنفسك' }, 
+            opt2: { val: 'S', en: 'Coach a team member who is struggling', ar: 'تساعد وتدرب زميلاً يواجه صعوبات' } 
+        },
+        { 
+            q_en: "When starting a new project, what excites you more?", q_ar: "عند بدء مشروع جديد، ما الذي يحمسك أكثر؟", 
+            opt1: { val: 'I', en: 'Analyzing data to find hidden patterns', ar: 'تحليل البيانات لاكتشاف أنماط وحلول خفية' }, 
+            opt2: { val: 'E', en: 'Pitching the bold idea to stakeholders', ar: 'عرض الفكرة الجريئة وإقناع الإدارة بها' } 
+        },
+        { 
+            q_en: "In your daily work routine, you prefer to:", q_ar: "في روتين عملك اليومي، تفضل أن:", 
+            opt1: { val: 'A', en: 'Brainstorm creative, out-of-the-box campaigns', ar: 'تبتكر أفكاراً إبداعية وحملات غير تقليدية' }, 
+            opt2: { val: 'C', en: 'Organize and audit processes or records', ar: 'تنظم وتدقق العمليات أو السجلات المالية' } 
+        },
+        { 
+            q_en: "How do you naturally manage your energy? (MBTI Check)", q_ar: "كيف تدير طاقتك طبيعياً؟ (مؤشر البيئة)", 
+            opt1: { val: 'Extrovert', en: 'I thrive in fast-paced, collaborative environments', ar: 'أبدع في البيئات السريعة التي تتطلب تواصلاً مستمراً' }, 
+            opt2: { val: 'Introvert', en: 'I need quiet space for deep, independent focus', ar: 'أحتاج إلى مساحة هادئة للتركيز العميق والمستقل' } 
+        },
+        { 
+            q_en: "Truth Check: Which statement is more true for you?", q_ar: "مؤشر الدقة: أي العبارات تمثلك بشكل حقيقي؟", 
+            opt1: { val: 'Flex', en: 'I adapt quickly to chaos and changing rules', ar: 'أتأقلم بسرعة مع التغييرات والمفاجآت المستمرة' }, 
+            opt2: { val: 'Order', en: 'I perform best when there is clear, strict structure', ar: 'أقدم أفضل أداء عندما يكون هناك هيكل وقواعد واضحة' } 
+        }
+    ];
 
     const fallbackCoach = {
         "University Project / Club": {
@@ -354,9 +379,11 @@
         }
 
         const activePanel = document.querySelector('.panel.active').id;
-        if (cachedData[activePanel]) {
+        if (cachedData[activePanel] || activePanel === 'compass') {
             if(activePanel === 'audit' && currentAuditData.length > 0) {
                 renderAuditWizard();
+            } else if (activePanel === 'compass' && compassIndex > 0) {
+                renderCompassQuestion();
             } else {
                 renderContent(activePanel, cachedData[activePanel]);
             }
@@ -382,8 +409,104 @@
             }
             document.getElementById('loader').style.display = 'none';
         }
-        
         renderContent(action, cachedData[action]);
+    }
+
+    // --- Compass Logic ---
+    function startCompass() {
+        compassQs = initCompassQuestions();
+        compassIndex = 0;
+        compassAnswers = [];
+        compassStartTime = Date.now();
+        document.getElementById('compassIntro').style.display = 'none';
+        document.getElementById('compassResult').style.display = 'none';
+        document.getElementById('compassQuiz').style.display = 'block';
+        renderCompassQuestion();
+    }
+
+    function renderCompassQuestion() {
+        if (compassIndex >= compassQs.length) {
+            finishCompass();
+            return;
+        }
+        const q = compassQs[compassIndex];
+        document.getElementById('compassProgress').style.width = `${(compassIndex / compassQs.length) * 100}%`;
+        document.getElementById('compassQText').innerText = currentLang === 'en' ? q.q_en : q.q_ar;
+        
+        document.getElementById('compassOptions').innerHTML = `
+            <button class="action-btn" onclick="answerCompass('${q.opt1.val}')">${currentLang === 'en' ? q.opt1.en : q.opt1.ar}</button>
+            <button class="action-btn" onclick="answerCompass('${q.opt2.val}')">${currentLang === 'en' ? q.opt2.en : q.opt2.ar}</button>
+        `;
+    }
+
+    function answerCompass(val) {
+        compassAnswers.push(val);
+        compassIndex++;
+        renderCompassQuestion();
+    }
+
+    async function finishCompass() {
+        document.getElementById('compassQuiz').style.display = 'none';
+        const timeTaken = (Date.now() - compassStartTime) / 1000;
+        
+        if (timeTaken < 10) {
+            document.getElementById('compassResult').style.display = 'block';
+            document.getElementById('compassResult').innerHTML = `
+                <div class="card" style="border-left: 4px solid var(--danger);">
+                    <strong style="color:var(--danger); font-size:1.2rem;">${dict[currentLang].calibrationWarn}</strong>
+                    <p style="margin-top:0.5rem; line-height: 1.6;">${dict[currentLang].calibrationText}</p>
+                    <button class="btn-primary" onclick="startCompass()">${dict[currentLang].compassRedo}</button>
+                </div>
+            `;
+            return;
+        }
+
+        const riasecSelection = compassAnswers.slice(0, 3).find(x => x);
+        const mbtiSelection = compassAnswers[3];
+        const finalCode = `${riasecSelection}-${mbtiSelection}`;
+
+        if (!cachedData.compass) {
+            document.getElementById('loader').style.display = 'block';
+            try {
+                const response = await fetch(`${API_URL}?action=compass`);
+                const result = await response.json();
+                cachedData.compass = result.data;
+            } catch (err) { }
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        renderCompassResult(finalCode);
+    }
+
+    function renderCompassResult(code) {
+        const container = document.getElementById('compassResult');
+        container.style.display = 'block';
+        
+        if (!cachedData.compass) {
+            container.innerHTML = `<div class="card">Data load failed. Please try again.</div>`;
+            return;
+        }
+
+        const match = cachedData.compass.find(d => (d.Code || d['Code ']) === code);
+        const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
+
+        if (match) {
+            container.innerHTML = `
+                <div class="card">
+                    <div style="font-size:0.875rem; font-weight:700; color:var(--primary); text-transform:uppercase; margin-bottom:0.5rem;">${currentLang === 'en' ? 'Your Career DNA:' : 'شخصيتك المهنية:'}</div>
+                    <h3 style="margin-top:0; color:var(--shfq-slate); font-size: 1.5rem;">${match['Archetype' + langSuffix]}</h3>
+                    <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; line-height: 1.6;">
+                        ${match['Description' + langSuffix]}
+                    </div>
+                    <strong style="color:var(--success); display:block; margin-bottom: 0.5rem;">${currentLang === 'en' ? 'Top Recommended Roles:' : 'أفضل الأدوار المناسبة لك:'}</strong>
+                    <ul style="line-height: 1.8; margin-top:0;">
+                        ${match['Roles' + langSuffix].split(',').map(r => `<li>${r.trim()}</li>`).join('')}
+                    </ul>
+                    <button class="btn-primary" onclick="startCompass()" style="background: var(--surface); color: var(--primary); border: 1px solid var(--border); margin-top: 2rem;">${dict[currentLang].compassRedo}</button>
+                </div>`;
+        } else {
+             container.innerHTML = `<div class="card">Result mapping pending for: ${code} <button class="btn-primary" onclick="startCompass()">${dict[currentLang].compassRedo}</button></div>`;
+        }
     }
 
     async function startAudit(group) {
