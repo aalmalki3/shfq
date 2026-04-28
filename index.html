@@ -603,10 +603,19 @@
                     </div>
                 </div>`;
         } else {
-             container.innerHTML = `
-                <div class="card">
-                    <p>Result mapping pending for advanced code: <strong>${code}</strong>. <br><span style="font-size:0.8rem; color:var(--text-muted);">Please add this code to the Google Sheet 'Career_Compass' tab.</span></p>
-                    <button class="btn-primary" onclick="startQuickCompass()">${dict[currentLang].compassRedo}</button>
+            // THE SURGICAL PATCH: Dynamic retry button based on code format (Deep vs Quick)
+            const isDeep = code.split('-')[0].length > 1;
+            const retryFunc = isDeep ? 'startDeepCompass()' : 'startQuickCompass()';
+            const btnText = isDeep ? (currentLang === 'ar' ? 'إعادة التحليل الدقيق' : 'Retake Deep Analysis') : dict[currentLang].compassRedo;
+            
+            const pendingMsg = currentLang === 'ar' 
+                ? `النتيجة قيد الإضافة للكود المتقدم: <strong style="color:var(--danger);" dir="ltr">${code}</strong><br><span style="font-size:0.85rem; color:var(--text-muted); display:inline-block; margin-top:0.5rem;">يرجى إضافة هذا الكود إلى جدول Career_Compass في Google Sheet.</span>`
+                : `Result mapping pending for advanced code: <strong style="color:var(--danger);">${code}</strong><br><span style="font-size:0.85rem; color:var(--text-muted); display:inline-block; margin-top:0.5rem;">Please add this code to the Google Sheet 'Career_Compass' tab.</span>`;
+            
+            container.innerHTML = `
+                <div class="card" style="text-align: center; border-color: #fde047; background: #fef9c3;">
+                    <p style="line-height: 1.6; margin-bottom: 1.5rem; color: #854d0e;">${pendingMsg}</p>
+                    <button class="btn-primary" onclick="${retryFunc}">${btnText}</button>
                 </div>`;
         }
     }
