@@ -581,7 +581,11 @@
             document.getElementById('loader').style.display = 'none';
         }
 
-        const match = cachedData.compass ? cachedData.compass.find(d => (d.Code || d['Code ']) === code) : null;
+        const match = cachedData.compass ? cachedData.compass.find(d => {
+    // Strips hidden spaces, markdown asterisks, and forces lowercase for a perfect match
+    let sheetCode = String(d.Code || d['Code '] || '').replace(/\*/g, '').trim().toLowerCase();
+    return sheetCode === code.trim().toLowerCase();
+}) : null;
         const langSuffix = currentLang === 'en' ? 'En' : 'Ar';
 
         if (match) {
