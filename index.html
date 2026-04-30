@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHFQ Hub | منصة شفق</title>
+    <style>
+        :root {
+            --bg-color: #f8f6f0; /* The cream/beige background from the image */
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --btn-bg: #64748b; /* Muted grey-blue button */
+            --btn-hover: #475569;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-left {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .header-right {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .icon-placeholder {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            flex-grow: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .action-btn {
+            background: var(--btn-bg);
+            color: white;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-align: center;
+            display: inline-block;
+            width: max-content;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--btn-hover);
+        }
+
+        footer {
+            margin-top: 5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <span>اللغة: العربية 🌐</span>
+            </div>
+            <div class="header-right">شفق SHFQ Hub</div>
+        </header>
+
+        <div class="hero">
+            <h1>أدوات للخريجين والأسر.</h1>
+            <p>أدوات مدعومة بالذكاء الاصطناعي للمسار والإنتاجية.</p>
+        </div>
+
+        <div id="services-grid" class="grid">
+            <!-- Loading indicator -->
+            <div id="loader" style="text-align: center; grid-column: 1 / -1; color: #6b7280;">
+                جاري الاتصال بقاعدة البيانات...
+            </div>
+        </div>
+
+        <footer>
+            <div>الشروط والأحكام | سياسة الخصوصية</div>
+            <div>منصة شفق، جميع الحقوق محفوظة © 2026</div>
+        </footer>
+    </div>
+
+    <script>
+        // IMPORTANT: Replace this with your Google Apps Script URL
+        const API_URL = 'YOUR_GAS_WEB_APP_URL_HERE'; 
+        const grid = document.getElementById('services-grid');
+        const loader = document.getElementById('loader');
+
+        // Abstract icons based on generic categories
+        const getIcon = (title) => {
+            if (title.includes('سيرة') || title.includes('CV')) return '📄';
+            if (title.includes('مال') || title.includes('Budget')) return '💰';
+            if (title.includes('مسار') || title.includes('Career')) return '🧭';
+            if (title.includes('أعمال') || title.includes('Business')) return '🏢';
+            return '⚙️';
+        };
+
+        async function loadServices() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                loader.style.display = 'none'; // Hide loader
+
+                data.forEach(item => {
+                    if (!item.Title) return; // Skip empty rows
+
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div class="icon-placeholder">${getIcon(item.Title)}</div>
+                        <h3>${item.Title}</h3>
+                        <p>${item.Description}</p>
+                        ${item.Link ? `<a href="${item.Link}" class="action-btn">أطلق الأداة</a>` : ''}
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (error) {
+                loader.innerHTML = 'تعذر تحميل البيانات. يرجى التحقق من الرابط.';
+            }
+        }
+
+        loadServices();
+    </script>
+</body>
+</html>
