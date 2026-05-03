@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHFQ AI Tools Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --brand-peach: #fae8d4; --brand-apricot: #f2cdae; --brand-ice: #cde0e5;
+            --brand-slate: #8f9ea6; --brand-charcoal: #333333; --brand-gold: #C9A84C;
+            --brand-navy: #1E3A5F; --bg-page: #fdfcfb;
+        }
+        [data-theme="dark"] {
+            --bg-page: #1a1a1a; --text-main: #f0f0f0; --surface: rgba(40,40,40,0.88);
+            --border-light: rgba(255,255,255,0.08);
+        }
+        body { font-family: 'Tajawal', 'Inter', sans-serif; background-color: var(--bg-page); transition: background 0.3s; overflow-x: hidden; }
+        .dna-orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; animation: float 20s infinite alternate; opacity: 0.6; }
+        @keyframes float { from { transform: translate(0,0); } to { transform: translate(100px, 100px); } }
+        .glass { background: rgba(255,255,255,0.7); backdrop-filter: blur(12px); border: 1px solid var(--brand-ice); }
+        [data-theme="dark"] .glass { background: rgba(30,30,30,0.7); border-color: rgba(255,255,255,0.1); }
+        .tool-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="min-h-screen text-[#333] dark:text-[#f0f0f0]">
+    <!-- Ambient DNA -->
+    <div class="dna-orb w-96 h-96 bg-[#fae8d4] top-[-10%] left-[-10%]"></div>
+    <div class="dna-orb w-80 h-80 bg-[#cde0e5] bottom-[-10%] right-[-10%]" style="animation-delay: -5s;"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 glass border-b px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-[#333] dark:bg-[#C9A84C] rounded-lg flex items-center justify-center text-white font-black">SH</div>
+            <h1 class="text-xl font-black tracking-tight" id="t-brand">SHFQ AI Portal</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleLang()" class="px-3 py-1 text-sm font-bold border rounded-md border-[#8f9ea6]" id="lang-btn">EN</button>
+            <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                <i data-lucide="moon" class="dark:hidden"></i>
+                <i data-lucide="sun" class="hidden dark:block"></i>
+            </button>
+            <button onclick="openAdmin()" class="p-2 text-[#8f9ea6] hover:text-[#333]"><i data-lucide="settings"></i></button>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        <div class="text-center mb-16">
+            <h2 class="text-5xl font-black mb-4 leading-tight" id="t-hero">أدوات الذكاء الاصطناعي المجانية</h2>
+            <p class="text-[#5c6b73] dark:text-[#a0aab4]" id="t-sub">بوابة الأدوات المستقلة والمبنية بلغة HTML</p>
+        </div>
+
+        <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards injected by JS -->
+        </div>
+    </main>
+
+    <!-- Admin Modal -->
+    <div id="admin-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div class="glass w-full max-w-lg rounded-[32px] p-8 shadow-2xl scale-95 transition-transform">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold" id="t-admin-title">لوحة التحكم</h3>
+                <button onclick="closeAdmin()"><i data-lucide="x"></i></button>
+            </div>
+            <div class="space-y-4">
+                <input id="tool-name-ar" type="text" placeholder="اسم الأداة (عربي)" class="w-full p-3 rounded-lg border bg-white/50 focus:ring-2 ring-[#cde0e5] outline-none">
+                <input id="tool-name-en" type="text" placeholder="Tool Name (EN)" class="w-full p-3 rounded-lg border bg-white/50 focus:ring-2 ring-[#cde0e5] outline-none" dir="ltr">
+                <input id="tool-url" type="url" placeholder="URL: https://..." class="w-full p-3 rounded-lg border bg-white/50 focus:ring-2 ring-[#cde0e5] outline-none" dir="ltr">
+                <button onclick="addTool()" class="w-full py-3 bg-[#333] dark:bg-[#C9A84C] text-white dark:text-[#1a1a1a] font-bold rounded-lg hover:opacity-90 transition">إضافة الأداة</button>
+            </div>
+            <div id="admin-list" class="mt-6 border-t pt-4 max-h-60 overflow-y-auto space-y-2"></div>
+        </div>
+    </div>
+
+    <script>
+        const t9n = {
+            ar: { brand: "بوابة SHFQ", hero: "أدوات الذكاء الاصطناعي", sub: "بوابة الأدوات المستقلة والمبنية بلغة HTML", admin: "لوحة التحكم", open: "فتح الأداة", del: "حذف" },
+            en: { brand: "SHFQ Portal", hero: "AI Generated Tools", sub: "Independent HTML-based utility gateway", admin: "Control Panel", open: "Open Tool", del: "Delete" }
+        };
+
+        let tools = JSON.parse(localStorage.getItem('shfq_tools')) || [
+            { id: 1, name: { ar: "محرر النصوص الذكي", en: "Smart Text Editor" }, url: "#" }
+        ];
+
+        function init() {
+            lucide.createIcons();
+            renderTools();
+            applyPreferences();
+        }
+
+        function toggleTheme() {
+            const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('shfq-theme', theme);
+        }
+
+        function toggleLang() {
+            const lang = document.documentElement.lang === 'ar' ? 'en' : 'ar';
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            document.getElementById('lang-btn').innerText = lang === 'ar' ? 'EN' : 'AR';
+            updateStrings();
+            renderTools();
+        }
+
+        function updateStrings() {
+            const lang = document.documentElement.lang;
+            document.getElementById('t-brand').innerText = t9n[lang].brand;
+            document.getElementById('t-hero').innerText = t9n[lang].hero;
+            document.getElementById('t-sub').innerText = t9n[lang].sub;
+            document.getElementById('t-admin-title').innerText = t9n[lang].admin;
+        }
+
+        function renderTools() {
+            const grid = document.getElementById('tools-grid');
+            const lang = document.documentElement.lang;
+            grid.innerHTML = tools.map(tool => `
+                <div class="glass p-8 rounded-[24px] tool-card transition-all flex flex-col justify-between h-full">
+                    <div>
+                        <div class="w-12 h-12 bg-[#fae8d4] dark:bg-[#333] rounded-xl mb-6 flex items-center justify-center">
+                            <i data-lucide="tool" class="text-[#333] dark:text-[#C9A84C]"></i>
+                        </div>
+                        <h4 class="text-xl font-bold mb-2">${tool.name[lang]}</h4>
+                    </div>
+                    <a href="${tool.url}" target="_blank" class="mt-6 inline-flex items-center gap-2 font-bold text-[#333] dark:text-[#C9A84C] hover:underline">
+                        ${t9n[lang].open} <i data-lucide="external-link" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            `).join('');
+            lucide.createIcons();
+            renderAdminList();
+        }
+
+        function addTool() {
+            const nameAr = document.getElementById('tool-name-ar').value;
+            const nameEn = document.getElementById('tool-name-en').value;
+            const url = document.getElementById('tool-url').value;
+            if(!nameAr || !url) return;
+            
+            tools.push({ id: Date.now(), name: { ar: nameAr, en: nameEn }, url });
+            localStorage.setItem('shfq_tools', JSON.stringify(tools));
+            renderTools();
+            closeAdmin();
+        }
+
+        function deleteTool(id) {
+            tools = tools.filter(t => t.id !== id);
+            localStorage.setItem('shfq_tools', JSON.stringify(tools));
+            renderTools();
+        }
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-list');
+            const lang = document.documentElement.lang;
+            list.innerHTML = tools.map(t => `
+                <div class="flex justify-between items-center p-2 bg-white/30 rounded-lg text-sm">
+                    <span>${t.name[lang]}</span>
+                    <button onclick="deleteTool(${t.id})" class="text-red-500">${t9n[lang].del}</button>
+                </div>
+            `).join('');
+        }
+
+        function openAdmin() { document.getElementById('admin-modal').classList.remove('hidden'); }
+        function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
+        function applyPreferences() {
+            const theme = localStorage.getItem('shfq-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        init();
+    </script>
+</body>
+</html>
